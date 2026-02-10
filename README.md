@@ -65,9 +65,6 @@ compute = client.compute.list()
 machine = client.machines.create(compute="na-us-ca-sfo_s.small", duration_minutes=60)
 print(machine.id, machine.host)
 
-# Claim a machine in an environment
-machine = client.machines.claim(environment="personal")
-
 # Get machine details
 machine = client.machines.retrieve("mach_abc123")
 
@@ -86,11 +83,8 @@ from layerbrain import Layerbrain
 async def main():
     client = Layerbrain()
 
-    # Claim or create a machine first
-    machine = client.machines.claim(environment="personal")
-
-    # Connect via WebSocket
-    async with await client.machines.connect(machine.id) as conn:
+    # Connect to a running machine via WebSocket
+    async with await client.machines.connect("mach_abc123") as conn:
         # Shell - execute commands
         result = await conn.shell.execute("ls -la ~/brain")
         print(result["stdout"])
@@ -162,12 +156,6 @@ for r in results["results"]:
 # Fetch page content
 page = client.tools.fetch(url="https://example.com")
 print(page["content"])
-```
-
-### Brains
-
-```python
-brain = client.brains.create(arena="brain-1.cli")
 ```
 
 ### Secrets
@@ -273,7 +261,10 @@ layerbrain machines list
 layerbrain machines create --compute na-us-ca-sfo_s.small --duration 60
 layerbrain machines get mach_abc123
 layerbrain machines delete mach_abc123
-layerbrain machines ssh --machine mach_abc123
+
+# SSH into a machine (interactive session)
+layerbrain machines ssh --id mach_abc123
+layerbrain machines ssh --id mach_abc123 --user root
 
 # Infrastructure
 layerbrain environments list
