@@ -75,6 +75,72 @@ machine = client.machines.retrieve("mach_abc123")
 client.machines.delete("mach_abc123")
 ```
 
+### Machine Connect (WebSocket)
+
+Connect to a running machine via WebSocket for shell and filesystem access:
+
+```python
+import asyncio
+from layerbrain import Layerbrain
+
+async def main():
+    client = Layerbrain()
+
+    # Claim or create a machine first
+    machine = client.machines.claim(environment="personal")
+
+    # Connect via WebSocket
+    async with await client.machines.connect(machine.id) as conn:
+        # Shell - execute commands
+        result = await conn.shell.execute("ls -la ~/brain")
+        print(result["stdout"])
+
+        result = await conn.shell.execute("pip install requests", cwd="/root")
+        print(result["code"])  # 0 = success
+
+        # Filesystem - list files
+        files = await conn.filesystem.list("~/brain")
+        for f in files:
+            print(f["name"], f["kind"])  # "docs" "folder", "main.py" "file"
+
+        # Filesystem - read/write files
+        await conn.filesystem.write("~/brain/hello.txt", "Hello World")
+        content = await conn.filesystem.read("~/brain/hello.txt")
+
+        # Filesystem - directory operations
+        await conn.filesystem.mkdir("~/brain/newdir")
+        await conn.filesystem.move("~/brain/hello.txt", "~/brain/newdir/hello.txt")
+        await conn.filesystem.copy("~/brain/newdir/hello.txt", "~/brain/backup.txt")
+        await conn.filesystem.delete("~/brain/backup.txt")
+
+        # Filesystem - search
+        results = await conn.filesystem.search("*.py", path="~/brain")
+        recents = await conn.filesystem.recents(limit=10, days=3)
+
+asyncio.run(main())
+```
+
+#### Shell Operations
+
+| Method | Description |
+|---|---|
+| `conn.shell.execute(cmd, cwd=None, timeout=30)` | Execute command, returns `{stdout, stderr, code}` |
+
+#### Filesystem Operations
+
+| Method | Description |
+|---|---|
+| `conn.filesystem.list(path, show_all=False)` | List directory contents |
+| `conn.filesystem.stat(path)` | Get file/folder metadata |
+| `conn.filesystem.read(path)` | Read file (base64 encoded) |
+| `conn.filesystem.write(path, data, encoding="utf-8")` | Write file |
+| `conn.filesystem.mkdir(path)` | Create directory (recursive) |
+| `conn.filesystem.delete(path)` | Delete file or directory |
+| `conn.filesystem.move(src, dst)` | Move/rename |
+| `conn.filesystem.copy(src, dst)` | Copy |
+| `conn.filesystem.search(pattern, path, limit)` | Search by name |
+| `conn.filesystem.recents(path, limit, days)` | Recently modified files |
+
 ### Models
 
 ```python

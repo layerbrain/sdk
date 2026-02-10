@@ -9,7 +9,12 @@ from .._pagination import SyncPage
 class Compute(Resource):
     """Compute API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """List all compute specifications with capacity per zone."""
         params: dict[str, Any] = {}
         if page is not None:
@@ -26,6 +31,12 @@ class Compute(Resource):
             path="/compute",
         )
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(
+        self,
+        id: str,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> dict:
         """Get detailed information about a specific compute offering."""
         return await self._get(f"/compute/{id}", params=None)

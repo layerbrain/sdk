@@ -9,7 +9,12 @@ from .._pagination import SyncPage
 class Accounts(Resource):
     """Accounts API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """Get current user's account."""
         params: dict[str, Any] = {}
         if page is not None:
@@ -34,7 +39,13 @@ class Accounts(Resource):
         """Handles DELETE requests to delete account with cascading cleanup."""
         return await self._delete(f"/accounts/{id}")
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(
+        self,
+        id: str,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> dict:
         """Handles GET requests to retrieve account info."""
         return await self._get(f"/accounts/{id}", params=None)
 
@@ -55,5 +66,5 @@ class Accounts(Resource):
         return await self._post(f"/accounts/{id}/onboard", json=kwargs)
 
     async def switch(self, id: str, **kwargs: Any) -> dict:
-        """Switch organization/membership endpoint - returns new token with specified or latest membership."""
+        """Switch organization/membership endpoint."""
         return await self._post(f"/accounts/{id}/switch", json=kwargs)

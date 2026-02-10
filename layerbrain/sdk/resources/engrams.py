@@ -9,7 +9,12 @@ from .._pagination import SyncPage
 class Engrams(Resource):
     """Engrams API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """Get list"""
         params: dict[str, Any] = {}
         if page is not None:
@@ -38,7 +43,13 @@ class Engrams(Resource):
         """Delete delete"""
         return await self._delete(f"/engrams/{id}")
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(
+        self,
+        id: str,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> dict:
         """Get retrieve"""
         return await self._get(f"/engrams/{id}", params=None)
 

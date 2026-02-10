@@ -261,7 +261,6 @@ def _gen_method(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[s
     if ep.has_body:
         params.append("**kwargs: Any")
 
-    sig = ", ".join(params)
     doc = ep.summary or f"{name.replace('_', ' ').capitalize()}."
 
     # Body — use Resource base class helpers (async, handled by _auto wrapper)
@@ -287,7 +286,17 @@ def _gen_method(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[s
         body = f"return await self._post({_path_expr(ep)}, json={{}})"
         ret = "dict"
 
-    return f'async def {name}({sig}) -> {ret}:\n    """{doc}"""\n    {body}'
+    # Build signature, wrapping if it would exceed 100 chars
+    inline_sig = ", ".join(params)
+    header = f"async def {name}({inline_sig}) -> {ret}:"
+    # +4 for class-level indent
+    if len(header) + 4 <= 100:
+        sig_str = f"async def {name}({inline_sig}) -> {ret}:"
+    else:
+        joined = ",\n    ".join(params)
+        sig_str = f"async def {name}(\n    {joined},\n) -> {ret}:"
+
+    return f'{sig_str}\n    """{doc}"""\n    {body}'
 
 
 def _gen_list_body(ep: Endpoint) -> str:
@@ -318,7 +327,17 @@ def generate_resource(res: Resource) -> str:
             methods.append(m)
 
     needs_page = any(ep.is_list for ep in res.endpoints)
-    imports = ["from __future__ import annotations", "", "from typing import Any, Optional", "", "from .._resource import Resource"]
+    needs_optional = any(
+        qp for ep in res.endpoints for qp in ep.query_params if not qp.required
+    )
+    typing_imports = "Any, Optional" if needs_optional else "Any"
+    imports = [
+        "from __future__ import annotations",
+        "",
+        f"from typing import {typing_imports}",
+        "",
+        "from .._resource import Resource",
+    ]
     if needs_page:
         imports.append("from .._pagination import SyncPage")
 

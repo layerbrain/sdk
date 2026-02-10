@@ -10,9 +10,8 @@ from typing import Any, AsyncIterator, Dict, Iterator, Optional
 
 import httpx
 
-from ._config import Config, DEFAULT_BASE_URL
+from ._config import Config
 from ._exceptions import (
-    APIError,
     AuthenticationError,
     ConnectionError,
     TimeoutError,
@@ -37,7 +36,11 @@ class _BaseClient:
     ) -> None:
         self._config = Config()
         self._api_key = api_key or self._config.api_key
-        self._base_url = (base_url or self._config.base_url).rstrip("/")
+        raw_url = (base_url or self._config.base_url).rstrip("/")
+        # Strip /v1 suffix if caller included it to prevent double /v1/v1
+        if raw_url.endswith("/v1"):
+            raw_url = raw_url[:-3]
+        self._base_url = raw_url
 
     def _build_headers(self) -> dict[str, str]:
         headers: dict[str, str] = {

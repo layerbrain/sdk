@@ -9,7 +9,12 @@ from .._pagination import SyncPage
 class APIKeys(Resource):
     """Api-Keys API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """Get list"""
         params: dict[str, Any] = {}
         if page is not None:
@@ -34,7 +39,13 @@ class APIKeys(Resource):
         """Delete destroy"""
         return await self._delete(f"/api-keys/{id}")
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(
+        self,
+        id: str,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> dict:
         """Get retrieve"""
         return await self._get(f"/api-keys/{id}", params=None)
 

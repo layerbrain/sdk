@@ -9,7 +9,12 @@ from .._pagination import SyncPage
 class Organizations(Resource):
     """Organizations API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """List organizations for the authenticated user."""
         params: dict[str, Any] = {}
         if page is not None:
@@ -34,7 +39,13 @@ class Organizations(Resource):
         """Delete an organization."""
         return await self._delete(f"/organizations/{id}")
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(
+        self,
+        id: str,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> dict:
         """Retrieve a single organization."""
         return await self._get(f"/organizations/{id}", params=None)
 

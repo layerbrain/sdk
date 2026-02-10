@@ -80,8 +80,10 @@ class Layerbrain:
     If no: sync mode -- resource methods return values directly.
 
     Args:
-        api_key: API key. Falls back to LAYERBRAIN_API_KEY env var or ~/.layerbrain/credentials.toml.
-        base_url: API base URL. Falls back to LAYERBRAIN_BASE_URL or https://api.layerbrain.com.
+        api_key: API key. Falls back to LAYERBRAIN_API_KEY env var
+            or ~/.layerbrain/credentials.toml.
+        base_url: API base URL. Falls back to LAYERBRAIN_BASE_URL
+            or https://api.layerbrain.com.
         timeout: HTTP request timeout in seconds.
     """
 
