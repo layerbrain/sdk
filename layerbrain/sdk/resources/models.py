@@ -32,12 +32,12 @@ class Models(Resource):
             params["page_size"] = page_size
         if ordering is not None:
             params["ordering"] = ordering
-        data = await self._get("/resources", params=params or None)
+        data = await self._get("/models", params=params or None)
         return SyncPage(
             data=data.get("data", []),
             has_more=data.get("has_more", False),
             client=self._client,
-            path="/resources",
+            path="/models",
         )
 
     async def retrieve(self, id: str) -> Model:
@@ -47,5 +47,5 @@ class Models(Resource):
         are URL-encoded automatically.
         """
         encoded_id = quote(id, safe="")
-        data = await self._get(f"/resources/{encoded_id}", params=None)
+        data = await self._get(f"/models/{encoded_id}", params=None)
         return Model(**data)

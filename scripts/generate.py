@@ -32,14 +32,12 @@ SKIP_TAGS = {"Health", "Webhooks", "Username"}
 MODULE_OVERRIDES = {
     "Api-Keys": "api_keys",
     "Threed": "threed",
-    "Resources": "models",
 }
 
 # Tag → class name overrides
 CLASS_OVERRIDES = {
     "Api-Keys": "APIKeys",
     "Threed": "ThreeD",
-    "Resources": "Models",
 }
 
 TYPE_MAP = {"string": "str", "integer": "int", "boolean": "bool", "number": "float"}
@@ -119,7 +117,11 @@ def parse_spec(spec: dict) -> list[Resource]:
             is_list = (
                 method == "get"
                 and not path_params
-                and (raw_path.endswith("/") or raw_path == f"/v1/{mod}" or raw_path == "/v1/resources")
+                and (
+                    raw_path.endswith("/")
+                    or raw_path == f"/v1/{mod}"
+                    or raw_path == "/v1/models"
+                )
             )
 
             resources[mod].endpoints.append(Endpoint(
@@ -152,7 +154,7 @@ def _relative_method_name(ep: Endpoint, res: Resource) -> str:
         /auth/intents/{id}/confirm → "intent_confirm"
         /auth/token/refresh  → "token_refresh"
     """
-    base_path = f"/{res.module_name}" if res.module_name != "models" else "/resources"
+    base_path = f"/{res.module_name}" if res.module_name != "models" else "/models"
     # Strip the base prefix from the path
     relative = ep.path
     if relative.startswith(base_path):
@@ -174,7 +176,7 @@ def _relative_method_name(ep: Endpoint, res: Resource) -> str:
 
 
 def _method_name(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[str]:
-    base_path = f"/{res.module_name}" if res.module_name != "models" else "/resources"
+    base_path = f"/{res.module_name}" if res.module_name != "models" else "/models"
 
     if ep.is_list:
         return "list"
@@ -414,7 +416,7 @@ def main():
         Resource(tag="Chat", module_name="chat", class_name="Chat"),
         Resource(tag="Auth", module_name="auth", class_name="Auth"),
         Resource(tag="Machines", module_name="machines", class_name="Machines"),
-        Resource(tag="Resources", module_name="models", class_name="Models"),
+        Resource(tag="Models", module_name="models", class_name="Models"),
     ]
 
     print(f"Parsed {len(resources)} resources from spec:")

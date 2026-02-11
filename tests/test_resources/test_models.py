@@ -43,7 +43,7 @@ class TestModels(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(model.id, "meta-llama/llama-3.1-8b")
         self.assertEqual(model.type, "chat")
         # Verify URL encoding: slash should be encoded as %2F
-        self.mock_client._get.assert_called_once_with("/resources/meta-llama%2Fllama-3.1-8b", params=None)
+        self.mock_client._get.assert_called_once_with("/models/meta-llama%2Fllama-3.1-8b", params=None)
 
 
 if __name__ == "__main__":

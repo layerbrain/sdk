@@ -1,4 +1,4 @@
-"""Resources commands for the Layerbrain CLI.
+"""Models commands for the Layerbrain CLI.
 
 Auto-generated from OpenAPI spec. Manual edits will be overwritten
 on next regeneration.
@@ -21,12 +21,12 @@ from layerbrain.cli._output import (
     validate_output_format,
 )
 
-app = typer.Typer(help="Resources", no_args_is_help=True)
+app = typer.Typer(help="Models", no_args_is_help=True)
 
 
 @app.command("get")
 def get_models(
-    id: str = typer.Argument(..., help="Resources ID"),
+    id: str = typer.Argument(..., help="Model ID"),
     output: str = typer.Option("table", "--output", help="Output format: table or json"),
 ) -> None:
     """Get a specific model by ID."""
