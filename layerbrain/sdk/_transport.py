@@ -1,6 +1,6 @@
-"""WebSocket transport for machine connections.
+"""WebSocket transport for live machine sessions.
 
-Implements the JSON-RPC style protocol used by /v1/machines/{id}/connect:
+Implements the JSON-RPC style protocol used by /v1/machines/{id}:
 - Request: {id, method, params}
 - Response: {id, data} or {id, error: {type, message}}
 - Events: {event, data}
@@ -15,7 +15,7 @@ from typing import Any, Callable, Dict
 
 
 class WebSocketTransport:
-    """WebSocket transport for communicating with a connected machine."""
+    """WebSocket transport for communicating with a live machine session."""
 
     def __init__(self, ws: Any) -> None:
         self._ws = ws

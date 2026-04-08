@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 from rich.console import Console
 from rich.table import Table
@@ -41,7 +41,7 @@ def print_success(message: str) -> None:
 
 def build_table(
     title: str,
-    columns: List[Tuple[str, str]],
+    columns: list[tuple[str, str]],
     *,
     show_lines: bool = True,
 ) -> Table:
@@ -86,7 +86,7 @@ API_KEY_STATUS_COLORS = {
 }
 
 
-def status_text(status: str, color_map: Dict[str, str]) -> Text:
+def status_text(status: str, color_map: dict[str, str]) -> Text:
     """Create a colored Text object for a status string."""
     color = color_map.get(status, "white")
     return Text(status, style=color)

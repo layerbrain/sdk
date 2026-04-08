@@ -6,20 +6,17 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
 from layerbrain.cli._output import (
     build_table,
     console,
     print_error,
     print_json,
-    print_success,
     validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Compute", no_args_is_help=True)
 

@@ -21,26 +21,51 @@ from typing import Optional
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SDK_DIR = PROJECT_ROOT / "layerbrain" / "sdk"
 RESOURCES_DIR = SDK_DIR / "resources"
-SPEC_FILE = SDK_DIR / "openapi" / "openapi.json"
+OPENAPI_DIR = PROJECT_ROOT / "openapi"
+REPO_SPEC_FILE = OPENAPI_DIR / "openapi.json"
+VENDORED_SPEC_FILE = SDK_DIR / "openapi" / "openapi.json"
 
 SPEC_URL = "https://raw.githubusercontent.com/layerbrain/openapi/main/openapi.json"
 
 # Tags to skip entirely (not user-facing)
-SKIP_TAGS = {"Health", "Webhooks", "Username"}
+SKIP_TAGS = {"Health", "Username"}
 
 # Tag → module name overrides
 MODULE_OVERRIDES = {
     "Api-Keys": "api_keys",
-    "Threed": "threed",
+    "3D": "threed",
+    "Network_Rules": "network_rules",
+    "Network_Flows": "network_flows",
 }
 
 # Tag → class name overrides
 CLASS_OVERRIDES = {
     "Api-Keys": "APIKeys",
-    "Threed": "ThreeD",
+    "3D": "ThreeD",
+    "Network_Rules": "NetworkRules",
+    "Network_Flows": "NetworkFlows",
 }
 
 TYPE_MAP = {"string": "str", "integer": "int", "boolean": "bool", "number": "float"}
+
+ACTION_PREFIXES = (
+    "list",
+    "create",
+    "retrieve",
+    "patch",
+    "put",
+    "replace",
+    "delete",
+    "destroy",
+    "archive",
+    "restore",
+    "download",
+    "rotate",
+    "validate",
+    "presign",
+    "reveal",
+    "claim",
+)
 
 
 # ---------------------------------------------------------------------------
@@ -82,7 +107,7 @@ def parse_spec(spec: dict) -> list[Resource]:
 
     for raw_path, methods in spec.get("paths", {}).items():
         for method, details in methods.items():
-            if method in ("parameters", "servers"):
+            if method in ("parameters", "servers") or method.startswith("x-"):
                 continue
 
             tag = (details.get("tags") or ["Untagged"])[0]
@@ -114,13 +139,17 @@ def parse_spec(spec: dict) -> list[Resource]:
                 path = path[3:]
             path = path.rstrip("/")
 
+            op_id = details.get("operationId", "")
             is_list = (
-                method == "get"
-                and not path_params
-                and (
-                    raw_path.endswith("/")
-                    or raw_path == f"/v1/{mod}"
-                    or raw_path == "/v1/models"
+                op_id.startswith(f"{mod}_list_")
+                or (
+                    method == "get"
+                    and not path_params
+                    and (
+                        raw_path.endswith("/")
+                        or raw_path == f"/v1/{mod}"
+                        or raw_path == "/v1/models"
+                    )
                 )
             )
 
@@ -175,7 +204,109 @@ def _relative_method_name(ep: Endpoint, res: Resource) -> str:
     return "_".join(parts) if parts else "create"
 
 
+def _singularize(value: str) -> str:
+    if value.endswith("ies") and len(value) > 3:
+        return value[:-3] + "y"
+    if value.endswith("ses") and len(value) > 3:
+        return value[:-2]
+    if value.endswith("s") and not value.endswith("ss") and len(value) > 2:
+        return value[:-1]
+    return value
+
+
+def _singularize_phrase(value: str) -> str:
+    if not value:
+        return value
+    parts = value.split("_")
+    parts[-1] = _singularize(parts[-1])
+    return "_".join(parts)
+
+
+def _operation_core(ep: Endpoint, res: Resource) -> str:
+    operation_id = ep.operation_id or ""
+    prefix = f"{res.module_name}_"
+    if operation_id.startswith(prefix):
+        operation_id = operation_id[len(prefix):]
+    suffix = f"_{ep.method}"
+    if operation_id.endswith(suffix):
+        operation_id = operation_id[: -len(suffix)]
+    return operation_id
+
+
+def _parse_operation(ep: Endpoint, res: Resource) -> tuple[str, str, str] | None:
+    core = _operation_core(ep, res)
+    if not core:
+        return None
+
+    for action in ACTION_PREFIXES:
+        if core == action:
+            return action, "", ""
+        prefix = f"{action}_"
+        if core.startswith(prefix):
+            entity = core[len(prefix):]
+            return action, entity, _singularize_phrase(entity)
+    return None
+
+
+def _resource_entities(res: Resource) -> set[str]:
+    entities: set[str] = set()
+    for endpoint in res.endpoints:
+        parsed = _parse_operation(endpoint, res)
+        if not parsed:
+            continue
+        _action, _raw_entity, entity = parsed
+        if entity:
+            entities.add(entity)
+    return entities
+
+
+def _build_action_method_name(action: str, raw_entity: str, singular_entity: str, *, multi_entity: bool) -> str:
+    if action == "destroy":
+        action = "delete"
+    if action == "patch":
+        action = "update"
+    if action == "put":
+        action = "replace"
+
+    if action == "list":
+        return "list" if not multi_entity else f"list_{raw_entity or 'items'}"
+    if action in {"create", "retrieve", "update", "replace", "delete"}:
+        return action if not multi_entity else f"{action}_{singular_entity or raw_entity or 'item'}"
+    if action == "archive":
+        return "archive" if not multi_entity else f"archive_{singular_entity or raw_entity or 'item'}"
+    if action == "restore":
+        return "restore" if not multi_entity else f"restore_{singular_entity or raw_entity or 'item'}"
+    if action == "download":
+        return "download" if not multi_entity else f"download_{singular_entity or raw_entity or 'item'}"
+    if action == "claim":
+        return "claim" if not multi_entity else f"claim_{singular_entity or raw_entity or 'item'}"
+    if action == "rotate":
+        return "rotate" if not raw_entity and not multi_entity else f"rotate_{singular_entity or raw_entity or 'item'}"
+    if action == "validate":
+        return "validate" if not raw_entity and not multi_entity else f"validate_{singular_entity or raw_entity or 'item'}"
+    if action == "presign":
+        return "presign" if not raw_entity and not multi_entity else f"presign_{singular_entity or raw_entity or 'item'}"
+    if action == "reveal":
+        return "reveal" if not raw_entity and not multi_entity else f"reveal_{singular_entity or raw_entity or 'item'}"
+    return f"{action}_{singular_entity or raw_entity or 'item'}"
+
+
 def _method_name(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[str]:
+    parsed = _parse_operation(ep, res)
+    if parsed:
+        action, raw_entity, singular_entity = parsed
+        candidate = _build_action_method_name(
+            action,
+            raw_entity,
+            singular_entity,
+            multi_entity=len(_resource_entities(res)) > 1,
+        )
+        if candidate in used_names:
+            fallback = _relative_method_name(ep, res)
+            if fallback not in used_names:
+                return fallback
+        return candidate
+
     base_path = f"/{res.module_name}" if res.module_name != "models" else "/models"
 
     if ep.is_list:
@@ -278,14 +409,23 @@ def _gen_method(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[s
     elif ep.method == "patch" and ep.has_body:
         body = f"return await self._patch({_path_expr(ep)}, json=kwargs)"
         ret = "dict"
+    elif ep.method == "patch":
+        body = f"return await self._patch({_path_expr(ep)}, json={{}})"
+        ret = "dict"
     elif ep.method == "put" and ep.has_body:
         body = f"return await self._put({_path_expr(ep)}, json=kwargs)"
+        ret = "dict"
+    elif ep.method == "put":
+        body = f"return await self._put({_path_expr(ep)}, json={{}})"
         ret = "dict"
     elif ep.method == "post" and ep.has_body:
         body = f"return await self._post({_path_expr(ep)}, json=kwargs)"
         ret = "dict"
-    else:
+    elif ep.method == "post":
         body = f"return await self._post({_path_expr(ep)}, json={{}})"
+        ret = "dict"
+    else:
+        body = f"return await self._get({_path_expr(ep)}, params=None)"
         ret = "dict"
 
     # Build signature, wrapping if it would exceed 100 chars
@@ -303,15 +443,16 @@ def _gen_method(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[s
 
 def _gen_list_body(ep: Endpoint) -> str:
     lines = []
+    lines.append(f"request_path = {_path_expr(ep)}")
     if ep.query_params:
         lines.append("params: dict[str, Any] = {}")
         for qp in ep.query_params:
             lines.append(f'if {qp.name} is not None:\n        params["{qp.name}"] = {qp.name}')
-        lines.append(f'data = await self._get("{ep.path}", params=params or None)')
+        lines.append("data = await self._get(request_path, params=params or None)")
     else:
-        lines.append(f'data = await self._get("{ep.path}", params=None)')
+        lines.append("data = await self._get(request_path, params=None)")
 
-    lines.append(f'return SyncPage(\n        data=data.get("data", []),\n        has_more=data.get("has_more", False),\n        client=self._client,\n        path="{ep.path}",\n    )')
+    lines.append('return SyncPage(\n        data=data.get("data", []),\n        has_more=data.get("has_more", False),\n        client=self._client,\n        path=request_path,\n    )')
     return "\n    ".join(lines)
 
 
@@ -381,10 +522,18 @@ def pull_spec(url: Optional[str] = None) -> dict:
     resp = httpx.get(target, timeout=30.0, follow_redirects=True)
     resp.raise_for_status()
     spec = resp.json()
-    SPEC_FILE.parent.mkdir(parents=True, exist_ok=True)
-    SPEC_FILE.write_text(json.dumps(spec, indent=2) + "\n")
-    print(f"Saved {SPEC_FILE}")
+    write_spec_files(spec)
     return spec
+
+
+def write_spec_files(spec: dict) -> None:
+    serialized = json.dumps(spec, indent=2) + "\n"
+    OPENAPI_DIR.mkdir(parents=True, exist_ok=True)
+    VENDORED_SPEC_FILE.parent.mkdir(parents=True, exist_ok=True)
+    REPO_SPEC_FILE.write_text(serialized)
+    VENDORED_SPEC_FILE.write_text(serialized)
+    print(f"Saved {REPO_SPEC_FILE}")
+    print(f"Mirrored {VENDORED_SPEC_FILE}")
 
 
 # ---------------------------------------------------------------------------
@@ -401,8 +550,9 @@ def main():
 
     if args.spec:
         spec = json.loads(Path(args.spec).read_text())
+        write_spec_files(spec)
     elif args.no_pull:
-        spec = json.loads(SPEC_FILE.read_text())
+        spec = json.loads(REPO_SPEC_FILE.read_text())
     else:
         spec = pull_spec(args.url)
 
@@ -410,13 +560,13 @@ def main():
 
     # Hand-written resources that the generator must never overwrite.
     # These require custom logic (streaming, Pydantic response parsing, URL encoding, SSH, etc.)
-    PRESERVED_MODULES = {"chat", "auth", "machines", "models"}
+    PRESERVED_MODULES = {"chat", "machines", "models", "webhooks"}
 
     preserved = [
         Resource(tag="Chat", module_name="chat", class_name="Chat"),
-        Resource(tag="Auth", module_name="auth", class_name="Auth"),
         Resource(tag="Machines", module_name="machines", class_name="Machines"),
         Resource(tag="Models", module_name="models", class_name="Models"),
+        Resource(tag="Webhooks", module_name="webhooks", class_name="Webhooks"),
     ]
 
     print(f"Parsed {len(resources)} resources from spec:")

@@ -15,19 +15,17 @@ def upgrade() -> None:
     """Upgrade the Layerbrain CLI to the latest version."""
     console.print(f"Installed version: {__version__}")
 
-    # Check latest version on PyPI
     result = subprocess.run(
-        [sys.executable, "pip", "index", "versions", "layerbrain"],
+        [sys.executable, "-m", "pip", "index", "versions", "layerbrain"],
         capture_output=True,
         text=True,
     )
 
     latest = None
     if result.returncode == 0 and result.stdout:
-        # pip index versions output: "layerbrain (0.2.0)"
         line = result.stdout.strip().split("\n")[0]
         if "(" in line:
-            latest = line.split("(")[1].split(")")[0]
+            latest = line.split("(", 1)[1].split(")", 1)[0]
 
     if latest:
         console.print(f"Latest version:    {latest}")
@@ -38,7 +36,6 @@ def upgrade() -> None:
     else:
         console.print("Could not determine latest version. Attempting upgrade.\n")
 
-    # Detect install method
     uv_result = subprocess.run(
         ["uv", "tool", "list"],
         capture_output=True,
@@ -56,13 +53,14 @@ def upgrade() -> None:
         console.print("Detected install method: pip")
         console.print(f"Running: {sys.executable} -m pip install --upgrade layerbrain")
         upgrade_result = subprocess.run(
-            [sys.executable, "pip", "install", "--upgrade", "layerbrain"],
+            [sys.executable, "-m", "pip", "install", "--upgrade", "layerbrain"],
             capture_output=True,
             text=True,
         )
 
     if upgrade_result.returncode == 0:
         print_success("Successfully upgraded!")
-    else:
-        print_error(f"Upgrade failed:\n{upgrade_result.stderr}")
-        raise typer.Exit(1)
+        return
+
+    print_error(f"Upgrade failed:\n{upgrade_result.stderr}")
+    raise typer.Exit(1)

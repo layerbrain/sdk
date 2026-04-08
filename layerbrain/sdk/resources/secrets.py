@@ -9,8 +9,14 @@ from .._pagination import SyncPage
 class Secrets(Resource):
     """Secrets API resource (auto-generated)."""
 
-    async def list(self, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> SyncPage:
+    async def list(
+        self,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
+    ) -> SyncPage:
         """List secrets for the authenticated user's organization."""
+        request_path = "/secrets"
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -18,12 +24,12 @@ class Secrets(Resource):
             params["page_size"] = page_size
         if ordering is not None:
             params["ordering"] = ordering
-        data = await self._get("/secrets", params=params or None)
+        data = await self._get(request_path, params=params or None)
         return SyncPage(
             data=data.get("data", []),
             has_more=data.get("has_more", False),
             client=self._client,
-            path="/secrets",
+            path=request_path,
         )
 
     async def create(self, **kwargs: Any) -> dict:
@@ -34,7 +40,7 @@ class Secrets(Resource):
         """Handle secret deletion."""
         return await self._delete(f"/secrets/{id}")
 
-    async def retrieve(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def retrieve(self, id: str) -> dict:
         """Handle secret retrieval."""
         return await self._get(f"/secrets/{id}", params=None)
 
@@ -42,10 +48,6 @@ class Secrets(Resource):
         """Handle secret updates via PATCH."""
         return await self._patch(f"/secrets/{id}", json=kwargs)
 
-    async def replace(self, id: str, **kwargs: Any) -> dict:
-        """Handle secret updates via PUT."""
-        return await self._put(f"/secrets/{id}", json=kwargs)
-
-    async def reveal(self, id: str, page: Optional[int] = 1, page_size: Optional[int] = 10, ordering: Optional[str] = None) -> dict:
+    async def reveal(self, id: str) -> dict:
         """Reveal the unmasked secret value."""
         return await self._get(f"/secrets/{id}/reveal", params=None)

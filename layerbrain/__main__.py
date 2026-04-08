@@ -1,5 +1,5 @@
 """Allow running the CLI via `python -m layerbrain`."""
 
-from layerbrain.cli.app import main
+from layerbrain.cli.main import main
 
 main()

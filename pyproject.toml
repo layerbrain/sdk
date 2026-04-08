@@ -1,7 +1,7 @@
 [project]
 name = "layerbrain"
 dynamic = ["version"]
-description = "The official Python SDK for the Layerbrain API"
+description = "The official Python SDK and CLI for the Layerbrain API"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -20,25 +20,21 @@ classifiers = [
 dependencies = [
     "httpx>=0.27",
     "pydantic>=2.0",
+    "rich>=13.0",
     "tomli>=2.0;python_version<'3.11'",
     "tomli-w>=1.0",
-    "websockets>=12.0",
-]
-
-[project.optional-dependencies]
-cli = [
     "typer>=0.15",
-    "rich>=13.0",
+    "websockets>=12.0",
 ]
 
 [project.urls]
 Homepage = "https://layerbrain.com"
 Documentation = "https://docs.layerbrain.com"
-Repository = "https://github.com/layerbrain/layerbrain-python"
-Changelog = "https://github.com/layerbrain/layerbrain-python/releases"
+Repository = "https://github.com/layerbrain/layerbrain"
+Changelog = "https://github.com/layerbrain/layerbrain/releases"
 
 [project.scripts]
-layerbrain = "layerbrain.cli.app:main"
+layerbrain = "layerbrain.cli.main:main"
 
 [build-system]
 requires = ["hatchling"]

@@ -8,10 +8,6 @@ from .._resource import Resource
 class Tools(Resource):
     """Tools API resource (auto-generated)."""
 
-    async def fetch(self, **kwargs: Any) -> dict:
-        """Fetch web page content using Playwright."""
-        return await self._post("/tools/fetch", json=kwargs)
-
-    async def search(self, **kwargs: Any) -> dict:
-        """Search the web using Brave Search API."""
-        return await self._post("/tools/search", json=kwargs)
+    async def web_search(self, **kwargs: Any) -> dict:
+        """Search the web"""
+        return await self._post("/tools/web-search", json=kwargs)

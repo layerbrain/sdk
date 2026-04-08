@@ -12,8 +12,9 @@ import tempfile
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._input import load_json_input
 from layerbrain.cli._output import (
+    MACHINE_STATUS_COLORS,
     build_detail_table,
     build_table,
     console,
@@ -22,7 +23,6 @@ from layerbrain.cli._output import (
     print_success,
     status_text,
     validate_output_format,
-    MACHINE_STATUS_COLORS,
 )
 
 app = typer.Typer(help="Machines", no_args_is_help=True)
@@ -100,22 +100,6 @@ def create(
 
 
 @app.command()
-def claim(
-    environment: str = typer.Option(..., "--environment", help="Environment to claim in"),
-    name: str = typer.Option("sandbox", "--name", help="Machine name"),
-    zone: str = typer.Option(None, "--zone", help="Preferred zone"),
-) -> None:
-    """Claim a pool machine for active usage."""
-    client = Layerbrain()
-    kwargs = {}
-    if zone is not None:
-        kwargs["zone"] = zone
-    machine = client.machines.claim(environment=environment, name=name, **kwargs)
-    print_success(f"Machine {machine.id} claimed ({machine.state}).")
-    print_json(machine.model_dump())
-
-
-@app.command()
 def delete(
     id: str = typer.Option(..., "--id", help="Machine ID"),
 ) -> None:
@@ -124,6 +108,45 @@ def delete(
     client = Layerbrain()
     client.machines.delete(id)
     print_success(f"Machine {id} deleted.")
+
+
+@app.command()
+def extend(
+    id: str = typer.Option(..., "--id", help="Machine ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
+) -> None:
+    """Extend a machine contract."""
+    client = Layerbrain()
+    result = client.machines.extend(id, **load_json_input(data, data_file))
+    print_success(f"Machine {id} extended.")
+    print_json(result)
+
+
+@app.command()
+def restore(
+    id: str = typer.Option(..., "--id", help="Machine ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
+) -> None:
+    """Restore a machine."""
+    client = Layerbrain()
+    result = client.machines.restore(id, **load_json_input(data, data_file))
+    print_success(f"Machine {id} restored.")
+    print_json(result)
+
+
+@app.command()
+def snapshot(
+    id: str = typer.Option(..., "--id", help="Machine ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
+) -> None:
+    """Create a machine snapshot."""
+    client = Layerbrain()
+    result = client.machines.snapshot(id, **load_json_input(data, data_file))
+    print_success(f"Snapshot requested for machine {id}.")
+    print_json(result)
 
 
 @app.command()
@@ -154,7 +177,7 @@ def ssh(
         print_error("Machine has no SSH key configured (ssh_secret_id is empty).")
         raise typer.Exit(1)
 
-    console.print(f"[dim]Retrieving SSH key...[/dim]")
+    console.print("[dim]Retrieving SSH key...[/dim]")
     secret = client.secrets.reveal(machine.ssh_secret_id)
     ssh_key = secret.get("value") if isinstance(secret, dict) else secret.value
 

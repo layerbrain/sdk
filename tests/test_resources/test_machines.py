@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 import unittest
 from unittest.mock import AsyncMock, MagicMock
 
@@ -41,7 +40,11 @@ class TestMachines(unittest.IsolatedAsyncioTestCase):
             "name": "test-machine",
             "state": "provisioning",
         }
-        machine = await self.machines.create(compute="A100", duration_minutes=30, name="test-machine")
+        machine = await self.machines.create(
+            compute="A100",
+            duration_minutes=30,
+            name="test-machine",
+        )
         self.assertIsInstance(machine, Machine)
         self.assertEqual(machine.id, "mach_new")
         self.assertEqual(machine.state, "provisioning")
@@ -62,31 +65,41 @@ class TestMachines(unittest.IsolatedAsyncioTestCase):
             json={"compute": "H100", "duration_minutes": 15},
         )
 
-    async def test_claim_returns_machine(self):
+    async def test_extend(self):
         self.mock_client._post.return_value = {
-            "id": "mach_claimed",
+            "id": "mach_123",
             "object": "machine",
-            "environment": "personal",
-            "state": "active",
         }
-        machine = await self.machines.claim(environment="personal")
-        self.assertIsInstance(machine, Machine)
-        self.assertEqual(machine.id, "mach_claimed")
+        payload = await self.machines.extend("mach_123", duration_minutes=30)
         self.mock_client._post.assert_called_once_with(
-            "/machines/claim",
-            json={"environment": "personal", "name": "sandbox", "autoenv": False},
+            "/machines/mach_123/extend",
+            json={"duration_minutes": 30},
         )
+        self.assertEqual(payload["id"], "mach_123")
 
-    async def test_claim_with_zone(self):
+    async def test_restore(self):
         self.mock_client._post.return_value = {
-            "id": "mach_zoned",
+            "id": "mach_123",
             "object": "machine",
         }
-        await self.machines.claim(environment="personal", zone="us-east-1", name="my-box")
+        payload = await self.machines.restore("mach_123", snapshot="snp_123")
         self.mock_client._post.assert_called_once_with(
-            "/machines/claim",
-            json={"environment": "personal", "name": "my-box", "autoenv": False, "zone": "us-east-1"},
+            "/machines/mach_123/restore",
+            json={"snapshot": "snp_123"},
         )
+        self.assertEqual(payload["id"], "mach_123")
+
+    async def test_snapshot(self):
+        self.mock_client._post.return_value = {
+            "id": "snp_123",
+            "object": "snapshot",
+        }
+        payload = await self.machines.snapshot("mach_123", name="nightly")
+        self.mock_client._post.assert_called_once_with(
+            "/machines/mach_123/snapshot",
+            json={"name": "nightly"},
+        )
+        self.assertEqual(payload["id"], "snp_123")
 
     async def test_retrieve_returns_machine(self):
         self.mock_client._get.return_value = {

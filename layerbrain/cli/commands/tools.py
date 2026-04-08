@@ -1,52 +1,33 @@
-"""Tools commands for the Layerbrain CLI.
-
-Auto-generated from OpenAPI spec. Manual edits will be overwritten
-on next regeneration.
-"""
+"""Tool commands."""
 
 from __future__ import annotations
-
-from typing import Optional
 
 import typer
 
 from layerbrain import Layerbrain
+from layerbrain.cli._input import load_json_input
+from layerbrain.cli._output import print_error, print_json
 from layerbrain.exceptions import LayerbrainError
-from layerbrain.cli._output import (
-    build_table,
-    console,
-    print_error,
-    print_json,
-    print_success,
-    validate_output_format,
-)
 
 app = typer.Typer(help="Tools", no_args_is_help=True)
 
 
-@app.command("fetch")
-def fetch(
-    id: str = typer.Argument(..., help="Tools ID"),
+@app.command("web-search")
+def web_search(
+    query: str = typer.Option(..., "--query", help="Search query."),
+    count: int | None = typer.Option(None, "--count", help="Optional result count."),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
-    """Fetch web page content using Playwright."""
+    """Search the web."""
+    payload = load_json_input(data, data_file)
+    payload.setdefault("query", query)
+    if count is not None:
+        payload.setdefault("count", count)
+
     client = Layerbrain()
     try:
-        result = client.tools.fetch()
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("search")
-def search(
-    id: str = typer.Argument(..., help="Tools ID"),
-) -> None:
-    """Search the web using Brave Search API."""
-    client = Layerbrain()
-    try:
-        result = client.tools.search()
+        result = client.tools.web_search(**payload)
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e

@@ -8,10 +8,10 @@ from .._resource import Resource
 class Audio(Resource):
     """Audio API resource (auto-generated)."""
 
-    async def speech(self, **kwargs: Any) -> dict:
-        """Create text-to-speech generation."""
+    async def create_speech(self, **kwargs: Any) -> dict:
+        """Post create_speech"""
         return await self._post("/audio/speech", json=kwargs)
 
-    async def transcriptions(self, **kwargs: Any) -> dict:
-        """Create speech-to-text transcription."""
+    async def create_transcription(self, **kwargs: Any) -> dict:
+        """Post create_transcription"""
         return await self._post("/audio/transcriptions", json=kwargs)

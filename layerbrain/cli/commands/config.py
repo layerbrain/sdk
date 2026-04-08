@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import typer
 
-from layerbrain.sdk._config import Config
 from layerbrain.cli._output import console, print_success
+from layerbrain.sdk._config import Config
 
 app = typer.Typer(help="Configure the CLI", no_args_is_help=True)
 

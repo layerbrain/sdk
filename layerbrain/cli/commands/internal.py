@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain.cli._output import console, print_error, print_success
@@ -13,14 +11,14 @@ app = typer.Typer(help="Internal developer tools", no_args_is_help=True, hidden=
 
 @app.command("pull-spec")
 def pull_spec(
-    url: Optional[str] = typer.Option(
+    url: str | None = typer.Option(
         None, "--url", help="Override the spec URL"
     ),
 ) -> None:
-    """Pull the OpenAPI spec from the layerbrain/openapi GitHub repo."""
-    from layerbrain.openapi.pull import pull
+    """Pull the OpenAPI spec and refresh the local tracked copy."""
+    from layerbrain.sdk.openapi.pull import pull
 
-    console.print("Pulling OpenAPI spec from GitHub...")
+    console.print("Pulling OpenAPI spec...")
     try:
         path = pull(url=url)
     except Exception as e:
@@ -33,7 +31,7 @@ def pull_spec(
 @app.command("show-spec")
 def show_spec() -> None:
     """Show info about the local OpenAPI spec."""
-    from layerbrain.openapi.pull import load
+    from layerbrain.sdk.openapi.pull import load
 
     try:
         spec = load()

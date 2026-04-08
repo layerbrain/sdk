@@ -17,21 +17,26 @@ from .commands.chat import app as chat_app
 from .commands.compute import app as compute_app
 from .commands.config import app as config_app
 from .commands.embeddings import app as embeddings_app
-from .commands.engrams import app as engrams_app
-from .commands.environments import app as environments_app
 from .commands.images import app as images_app
+from .commands.internal import app as internal_app
+from .commands.listen import listen
 from .commands.machines import app as machines_app
 from .commands.memberships import app as memberships_app
 from .commands.models import app as models_app
+from .commands.network_flows import app as network_flows_app
+from .commands.network_rules import app as network_rules_app
+from .commands.networks import app as networks_app
 from .commands.organizations import app as organizations_app
 from .commands.secrets import app as secrets_app
+from .commands.snapshots import app as snapshots_app
 from .commands.statements import app as statements_app
+from .commands.storage import app as storage_app
 from .commands.subscriptions import app as subscriptions_app
 from .commands.threed import app as threed_app
 from .commands.tools import app as tools_app
-from .commands.internal import app as internal_app
 from .commands.upgrade import upgrade
 from .commands.videos import app as videos_app
+from .commands.webhooks import app as webhooks_app
 
 app = typer.Typer(
     name="layerbrain",
@@ -54,15 +59,20 @@ app.add_typer(tools_app, name="tools", rich_help_panel="Tools")
 
 # Brain
 app.add_typer(brains_app, name="brains", rich_help_panel="Brain")
-app.add_typer(engrams_app, name="engrams", rich_help_panel="Brain")
 
 # Compute
 app.add_typer(compute_app, name="compute", rich_help_panel="Compute")
+app.add_typer(networks_app, name="networks", rich_help_panel="Compute")
+app.add_typer(network_rules_app, name="network-rules", rich_help_panel="Compute")
+app.add_typer(network_flows_app, name="network-flows", rich_help_panel="Compute")
+app.add_typer(snapshots_app, name="snapshots", rich_help_panel="Compute")
+app.add_typer(storage_app, name="storage", rich_help_panel="Compute")
 
 # Machines
 app.add_typer(machines_app, name="machines", rich_help_panel="Machines")
-app.add_typer(environments_app, name="environments", rich_help_panel="Machines")
 app.add_typer(secrets_app, name="secrets", rich_help_panel="Machines")
+app.command(rich_help_panel="Webhooks")(listen)
+app.add_typer(webhooks_app, name="webhooks", rich_help_panel="Webhooks")
 
 # Account
 app.command(rich_help_panel="Account")(login)

@@ -9,5 +9,5 @@ class Embeddings(Resource):
     """Embeddings API resource (auto-generated)."""
 
     async def create(self, **kwargs: Any) -> dict:
-        """Create embeddings for input text."""
+        """Post create_embedding"""
         return await self._post("/embeddings", json=kwargs)

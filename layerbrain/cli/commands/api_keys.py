@@ -6,12 +6,9 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
 from layerbrain.cli._output import (
     build_table,
     console,
@@ -20,6 +17,7 @@ from layerbrain.cli._output import (
     print_success,
     validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Api-Keys", no_args_is_help=True)
 
@@ -47,14 +45,17 @@ def list_api_keys(
     console.print(table)
 
 
-@app.command("api-keys")
-def api_keys(
-    id: str = typer.Argument(..., help="Api-Keys ID"),
+@app.command()
+def create(
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
-    """Post create"""
+    """Create a new API key."""
+    from layerbrain.cli._input import load_json_input
+
     client = Layerbrain()
     try:
-        result = client.api_keys.api_keys()
+        result = client.api_keys.create(**load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e
@@ -98,11 +99,15 @@ def get_api_keys(
 @app.command("update")
 def update(
     id: str = typer.Argument(..., help="Api-Keys ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
     """Patch patch"""
+    from layerbrain.cli._input import load_json_input
+
     client = Layerbrain()
     try:
-        result = client.api_keys.update(id)
+        result = client.api_keys.update(id, **load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e

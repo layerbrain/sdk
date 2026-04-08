@@ -389,7 +389,7 @@ class TestMachinesConnectMethod(unittest.IsolatedAsyncioTestCase):
         call_args = mock_ws_module.connect.call_args
         self.assertEqual(
             call_args[0][0],
-            "wss://api.layerbrain.com/v1/machines/mach_123/connect",
+            "wss://api.layerbrain.com/v1/machines/mach_123",
         )
         self.assertEqual(
             call_args[1]["additional_headers"]["Authorization"],
@@ -416,7 +416,7 @@ class TestMachinesConnectMethod(unittest.IsolatedAsyncioTestCase):
         call_args = mock_ws_module.connect.call_args
         self.assertEqual(
             call_args[0][0],
-            "ws://localhost:8000/v1/machines/mach_local/connect",
+            "ws://localhost:8000/v1/machines/mach_local",
         )
 
         await conn.close()

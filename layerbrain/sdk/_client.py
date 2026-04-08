@@ -22,7 +22,7 @@ from .._version import __version__
 
 def _default_user_agent() -> str:
     py = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
-    return f"layerbrain-python/{__version__} python/{py}"
+    return f"layerbrain/{__version__} python/{py}"
 
 
 class _BaseClient:

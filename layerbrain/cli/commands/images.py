@@ -6,32 +6,28 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._input import load_json_input
 from layerbrain.cli._output import (
-    build_table,
-    console,
     print_error,
     print_json,
-    print_success,
-    validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Images", no_args_is_help=True)
 
 
 @app.command("edits")
 def edits(
-    id: str = typer.Argument(..., help="Images ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
     """Create image edit (image-to-image)."""
     client = Layerbrain()
     try:
-        result = client.images.edits()
+        result = client.images.create_edit(**load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e
@@ -41,12 +37,13 @@ def edits(
 
 @app.command("generations")
 def generations(
-    id: str = typer.Argument(..., help="Images ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
     """Create image generation."""
     client = Layerbrain()
     try:
-        result = client.images.generations()
+        result = client.images.create_generation(**load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e

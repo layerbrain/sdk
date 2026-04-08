@@ -7,8 +7,7 @@ from unittest.mock import MagicMock, patch
 
 from typer.testing import CliRunner
 
-from layerbrain.cli.app import app
-
+from layerbrain.cli.main import app
 
 runner = CliRunner()
 
@@ -21,8 +20,22 @@ class TestMachinesListCommand(unittest.TestCase):
         mock_client = MagicMock()
         mock_page = MagicMock()
         mock_page.data = [
-            {"id": "mach_1", "name": "dev", "environment": "personal", "state": "active", "zone": "us-east-1", "host": "1.2.3.4"},
-            {"id": "mach_2", "name": "prod", "environment": "work", "state": "stopped", "zone": "eu-west-1", "host": "5.6.7.8"},
+            {
+                "id": "mach_1",
+                "name": "dev",
+                "environment": "personal",
+                "state": "active",
+                "zone": "us-east-1",
+                "host": "1.2.3.4",
+            },
+            {
+                "id": "mach_2",
+                "name": "prod",
+                "environment": "work",
+                "state": "stopped",
+                "zone": "eu-west-1",
+                "host": "5.6.7.8",
+            },
         ]
         mock_client.machines.list.return_value = mock_page
         mock_cls.return_value = mock_client

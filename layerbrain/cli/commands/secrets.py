@@ -6,12 +6,10 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._input import load_json_input
 from layerbrain.cli._output import (
     build_table,
     console,
@@ -20,6 +18,7 @@ from layerbrain.cli._output import (
     print_success,
     validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Secrets", no_args_is_help=True)
 
@@ -48,16 +47,19 @@ def list_secrets(
 
 
 @app.command()
-def create() -> None:
+def create(
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
+) -> None:
     """Handle secret creation."""
     client = Layerbrain()
     try:
-        result = client.secrets.create()
+        result = client.secrets.create(**load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e
 
-    print_success(f"Secrets created.")
+    print_success("Secrets created.")
     print_json(result)
 
 
@@ -97,26 +99,13 @@ def get_secrets(
 @app.command("update")
 def update(
     id: str = typer.Argument(..., help="Secrets ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
     """Handle secret updates via PATCH."""
     client = Layerbrain()
     try:
-        result = client.secrets.update(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("replace")
-def replace(
-    id: str = typer.Argument(..., help="Secrets ID"),
-) -> None:
-    """Handle secret updates via PUT."""
-    client = Layerbrain()
-    try:
-        result = client.secrets.replace(id)
+        result = client.secrets.update(id, **load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e

@@ -83,7 +83,7 @@ class TestSyncHTTPClient(unittest.TestCase):
     def test_user_agent_header(self):
         client = SyncHTTPClient(api_key="sk-test", base_url="https://test.api.com")
         headers = client._build_headers()
-        self.assertIn("layerbrain-python/", headers["User-Agent"])
+        self.assertIn("layerbrain/", headers["User-Agent"])
 
     @patch.object(httpx.Client, "request")
     def test_get_request(self, mock_request):

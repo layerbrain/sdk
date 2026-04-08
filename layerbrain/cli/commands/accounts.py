@@ -6,12 +6,10 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._input import load_json_input
 from layerbrain.cli._output import (
     build_table,
     console,
@@ -20,6 +18,7 @@ from layerbrain.cli._output import (
     print_success,
     validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Accounts", no_args_is_help=True)
 
@@ -45,20 +44,6 @@ def list_accounts(
     for item in page.data:
         table.add_row(item.get("id", ""), item.get("name", ""))
     console.print(table)
-
-
-@app.command()
-def create() -> None:
-    """Create endpoint is not allowed for accounts."""
-    client = Layerbrain()
-    try:
-        result = client.accounts.create()
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_success(f"Accounts created.")
-    print_json(result)
 
 
 @app.command()
@@ -97,71 +82,13 @@ def get_accounts(
 @app.command("update")
 def update(
     id: str = typer.Argument(..., help="Accounts ID"),
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
 ) -> None:
     """Handles PATCH requests to update account info."""
     client = Layerbrain()
     try:
-        result = client.accounts.update(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("clear-data")
-def clear_data(
-    id: str = typer.Argument(..., help="Accounts ID"),
-) -> None:
-    """Clear all cloud storage data for the user's organization."""
-    client = Layerbrain()
-    try:
-        result = client.accounts.clear_data(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("export")
-def export(
-    id: str = typer.Argument(..., help="Accounts ID"),
-) -> None:
-    """Generate presigned download URL for latest snapshot."""
-    client = Layerbrain()
-    try:
-        result = client.accounts.export(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("onboard")
-def onboard(
-    id: str = typer.Argument(..., help="Accounts ID"),
-) -> None:
-    """Handle onboarding of a new account with activation code."""
-    client = Layerbrain()
-    try:
-        result = client.accounts.onboard(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("switch")
-def switch(
-    id: str = typer.Argument(..., help="Accounts ID"),
-) -> None:
-    """Switch organization/membership endpoint - returns new token with specified or latest membership."""
-    client = Layerbrain()
-    try:
-        result = client.accounts.switch(id)
+        result = client.accounts.update(id, **load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e

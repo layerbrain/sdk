@@ -6,12 +6,10 @@ on next regeneration.
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._input import load_json_input
 from layerbrain.cli._output import (
     build_table,
     console,
@@ -20,6 +18,7 @@ from layerbrain.cli._output import (
     print_success,
     validate_output_format,
 )
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Memberships", no_args_is_help=True)
 
@@ -48,46 +47,19 @@ def list_memberships(
 
 
 @app.command()
-def create() -> None:
+def create(
+    data: str | None = typer.Option(None, "--data", help="Inline JSON request body."),
+    data_file: str | None = typer.Option(None, "--data-file", help="Path to a JSON request body."),
+) -> None:
     """Create memberships or membership invites."""
     client = Layerbrain()
     try:
-        result = client.memberships.create()
+        result = client.memberships.create(**load_json_input(data, data_file))
     except LayerbrainError as e:
         print_error(str(e))
         raise typer.Exit(1) from e
 
-    print_success(f"Memberships created.")
-    print_json(result)
-
-
-@app.command("accept")
-def accept(
-    id: str = typer.Argument(..., help="Memberships ID"),
-) -> None:
-    """Accept a membership invitation and connect the account to the membership."""
-    client = Layerbrain()
-    try:
-        result = client.memberships.accept(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
-    print_json(result)
-
-
-@app.command("cancel")
-def cancel(
-    id: str = typer.Argument(..., help="Memberships ID"),
-) -> None:
-    """Cancel a membership invitation. Both organization members and the invited user can cancel."""
-    client = Layerbrain()
-    try:
-        result = client.memberships.cancel(id)
-    except LayerbrainError as e:
-        print_error(str(e))
-        raise typer.Exit(1) from e
-
+    print_success("Memberships created.")
     print_json(result)
 
 

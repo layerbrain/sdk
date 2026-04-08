@@ -16,6 +16,7 @@ class Organizations(Resource):
         ordering: Optional[str] = None,
     ) -> SyncPage:
         """List organizations for the authenticated user."""
+        request_path = "/organizations"
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -23,12 +24,12 @@ class Organizations(Resource):
             params["page_size"] = page_size
         if ordering is not None:
             params["ordering"] = ordering
-        data = await self._get("/organizations", params=params or None)
+        data = await self._get(request_path, params=params or None)
         return SyncPage(
             data=data.get("data", []),
             has_more=data.get("has_more", False),
             client=self._client,
-            path="/organizations",
+            path=request_path,
         )
 
     async def create(self, **kwargs: Any) -> dict:
@@ -39,13 +40,7 @@ class Organizations(Resource):
         """Delete an organization."""
         return await self._delete(f"/organizations/{id}")
 
-    async def retrieve(
-        self,
-        id: str,
-        page: Optional[int] = 1,
-        page_size: Optional[int] = 10,
-        ordering: Optional[str] = None,
-    ) -> dict:
+    async def retrieve(self, id: str) -> dict:
         """Retrieve a single organization."""
         return await self._get(f"/organizations/{id}", params=None)
 

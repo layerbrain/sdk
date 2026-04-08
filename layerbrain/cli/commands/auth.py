@@ -11,24 +11,24 @@ import time
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.sdk._config import Config
-from layerbrain.exceptions import LayerbrainError
+from layerbrain.cli._auth_client import CLIAuthClient
 from layerbrain.cli._output import (
     build_detail_table,
     console,
     print_error,
     print_success,
 )
+from layerbrain.sdk._config import Config
 
 
 def login() -> None:
     """Authenticate with Layerbrain using the device flow."""
-    client = Layerbrain(api_key="anonymous")
+    client = CLIAuthClient(api_key="anonymous")
 
     console.print("[dim]Starting device authorization...[/dim]")
-    device = client.auth.device(client_id="layerbrain-cli")
+    device = client.device(client_id="layerbrain")
 
-    console.print(f"\nOpen this URL in your browser:\n")
+    console.print("\nOpen this URL in your browser:\n")
     console.print(f"  [bold cyan]{device.verification_uri_complete}[/bold cyan]\n")
     console.print(f"Your code: [bold]{device.code}[/bold]\n")
     console.print("[dim]Waiting for authorization...[/dim]")
@@ -38,10 +38,10 @@ def login() -> None:
 
     while time.time() < expires_at:
         time.sleep(interval)
-        result = client.auth.token_exchange(
+        result = client.token_exchange(
             grant_type="device_code",
             device_code=device.device_code,
-            client_id="layerbrain-cli",
+            client_id="layerbrain",
         )
         # token_exchange returns raw dict when pending, AuthToken on success
         if isinstance(result, dict):
@@ -66,8 +66,11 @@ def login() -> None:
 
 def logout() -> None:
     """Logout and clear stored credentials."""
-    client = Layerbrain()
-    client.auth.logout()
+    client = CLIAuthClient()
+    try:
+        client.logout()
+    finally:
+        client.close()
     Config().clear_credentials()
     print_success("Logged out.")
 

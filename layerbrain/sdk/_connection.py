@@ -1,4 +1,4 @@
-"""Machine connection with shell and filesystem sub-interfaces.
+"""Live machine session with shell and filesystem sub-interfaces.
 
 Usage:
     client = Layerbrain()
@@ -22,7 +22,7 @@ from ._transport import WebSocketTransport
 
 
 class MachineShell:
-    """Shell command execution on a connected machine."""
+    """Shell command execution inside a live machine session."""
 
     def __init__(self, transport: WebSocketTransport) -> None:
         self._transport = transport
@@ -40,7 +40,7 @@ class MachineShell:
 
 
 class MachineFilesystem:
-    """Filesystem operations on a connected machine (maps to inodes.* methods)."""
+    """Filesystem operations inside a live machine session (maps to inodes.* methods)."""
 
     def __init__(self, transport: WebSocketTransport) -> None:
         self._transport = transport

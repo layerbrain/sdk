@@ -2,13 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Optional
-
 import typer
 
 from layerbrain import Layerbrain
-from layerbrain.exceptions import LayerbrainError
 from layerbrain.cli._output import console, print_error
+from layerbrain.exceptions import LayerbrainError
 
 app = typer.Typer(help="Run chat completions", no_args_is_help=True)
 completions_app = typer.Typer(help="Run chat completions", no_args_is_help=True)
@@ -19,7 +17,7 @@ app.add_typer(completions_app, name="completions")
 def create(
     model: str = typer.Option(..., "--model", help="Model ID"),
     message: str = typer.Option(..., "--message", help="User message"),
-    system: Optional[str] = typer.Option(None, "--system", help="System prompt"),
+    system: str | None = typer.Option(None, "--system", help="System prompt"),
     stream: bool = typer.Option(True, "--stream/--no-stream", help="Stream the response"),
 ) -> None:
     """Create a chat completion."""

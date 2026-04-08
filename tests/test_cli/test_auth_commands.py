@@ -7,8 +7,7 @@ from unittest.mock import MagicMock, patch
 
 from typer.testing import CliRunner
 
-from layerbrain.cli.app import app
-
+from layerbrain.cli.main import app
 
 runner = CliRunner()
 
@@ -40,10 +39,10 @@ class TestLogoutCommand(unittest.TestCase):
     """Test layerbrain auth logout command."""
 
     @patch("layerbrain.cli.commands.auth.Config")
-    @patch("layerbrain.cli.commands.auth.Layerbrain")
+    @patch("layerbrain.cli.commands.auth.CLIAuthClient")
     def test_logout_clears_credentials(self, mock_cls, mock_config_cls):
         mock_client = MagicMock()
-        mock_client.auth.logout.return_value = {"message": "ok"}
+        mock_client.logout.return_value = {"message": "ok"}
         mock_cls.return_value = mock_client
         mock_config = MagicMock()
         mock_config_cls.return_value = mock_config

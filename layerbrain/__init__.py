@@ -1,4 +1,4 @@
-"""Layerbrain Python SDK + CLI.
+"""Layerbrain Python SDK.
 
 Usage::
 
@@ -10,6 +10,7 @@ Usage::
 """
 
 from layerbrain.sdk import Layerbrain
+
 from ._version import __version__
 
 __all__ = [

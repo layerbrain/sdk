@@ -6,10 +6,9 @@ They are used by resource classes to provide typed responses.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Generic list response
@@ -18,7 +17,7 @@ from pydantic import BaseModel, Field
 class ListResponse(BaseModel):
     """Standard list response envelope: {"object": "list", "data": [...], "has_more": false}"""
     object: str = "list"
-    data: List[Dict[str, Any]] = Field(default_factory=list)
+    data: list[dict[str, Any]] = Field(default_factory=list)
     has_more: bool = False
 
 
@@ -30,10 +29,10 @@ class Account(BaseModel):
     id: str
     object: str = "account"
     email: str
-    name: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
-    created: Optional[str] = None
-    modified: Optional[str] = None
+    name: str | None = None
+    data: dict[str, Any] | None = None
+    created: str | None = None
+    modified: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -43,11 +42,11 @@ class Account(BaseModel):
 class Organization(BaseModel):
     id: str
     object: str = "organization"
-    name: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
-    created: Optional[str] = None
-    modified: Optional[str] = None
-    deleted: Optional[str] = None
+    name: str | None = None
+    data: dict[str, Any] | None = None
+    created: str | None = None
+    modified: str | None = None
+    deleted: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -57,23 +56,23 @@ class Organization(BaseModel):
 class Machine(BaseModel):
     id: str
     object: str = "machine"
-    name: Optional[str] = None
-    organization: Optional[str] = None
-    environment: Optional[str] = None
-    state: Optional[str] = None
-    zone: Optional[str] = None
-    type: Optional[str] = None
-    cwd: Optional[str] = None
-    host: Optional[str] = None
-    ipv4: Optional[str] = None
-    ipv6: Optional[str] = None
-    key: Optional[str] = None
-    vcpu: Optional[int] = None
-    ram_gb: Optional[int] = None
-    ssh_secret_id: Optional[str] = None
-    created: Optional[str] = None
-    modified: Optional[str] = None
-    expires_at: Optional[str] = None
+    name: str | None = None
+    organization: str | None = None
+    environment: str | None = None
+    state: str | None = None
+    zone: str | None = None
+    type: str | None = None
+    cwd: str | None = None
+    host: str | None = None
+    ipv4: str | None = None
+    ipv6: str | None = None
+    key: str | None = None
+    vcpu: int | None = None
+    ram_gb: int | None = None
+    ssh_secret_id: str | None = None
+    created: str | None = None
+    modified: str | None = None
+    expires_at: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -83,9 +82,9 @@ class Machine(BaseModel):
 class Model(BaseModel):
     id: str
     object: str = "model"
-    type: Optional[str] = None
-    provider: Optional[str] = None
-    pricing: Optional[Dict[str, Any]] = None
+    type: str | None = None
+    provider: str | None = None
+    pricing: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -94,13 +93,13 @@ class Model(BaseModel):
 
 class ChatCompletionMessage(BaseModel):
     role: str
-    content: Optional[str] = None
+    content: str | None = None
 
 
 class ChatCompletionChoice(BaseModel):
     index: int = 0
-    message: Optional[ChatCompletionMessage] = None
-    finish_reason: Optional[str] = None
+    message: ChatCompletionMessage | None = None
+    finish_reason: str | None = None
 
 
 class ChatCompletionUsage(BaseModel):
@@ -110,32 +109,32 @@ class ChatCompletionUsage(BaseModel):
 
 
 class ChatCompletion(BaseModel):
-    id: Optional[str] = None
+    id: str | None = None
     object: str = "chat.completion"
-    created: Optional[int] = None
-    model: Optional[str] = None
-    choices: List[ChatCompletionChoice] = Field(default_factory=list)
-    usage: Optional[ChatCompletionUsage] = None
+    created: int | None = None
+    model: str | None = None
+    choices: list[ChatCompletionChoice] = Field(default_factory=list)
+    usage: ChatCompletionUsage | None = None
 
 
 class ChatCompletionChunkDelta(BaseModel):
-    role: Optional[str] = None
-    content: Optional[str] = None
+    role: str | None = None
+    content: str | None = None
 
 
 class ChatCompletionChunkChoice(BaseModel):
     index: int = 0
     delta: ChatCompletionChunkDelta = Field(default_factory=ChatCompletionChunkDelta)
-    finish_reason: Optional[str] = None
+    finish_reason: str | None = None
 
 
 class ChatCompletionChunk(BaseModel):
-    id: Optional[str] = None
+    id: str | None = None
     object: str = "chat.completion.chunk"
-    created: Optional[int] = None
-    model: Optional[str] = None
-    choices: List[ChatCompletionChunkChoice] = Field(default_factory=list)
-    usage: Optional[ChatCompletionUsage] = None
+    created: int | None = None
+    model: str | None = None
+    choices: list[ChatCompletionChunkChoice] = Field(default_factory=list)
+    usage: ChatCompletionUsage | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -144,12 +143,12 @@ class ChatCompletionChunk(BaseModel):
 
 class APIKey(BaseModel):
     id: str
-    name: Optional[str] = None
-    note: Optional[str] = None
-    value: Optional[str] = None
-    secret: Optional[str] = None
-    status: Optional[str] = None
-    created: Optional[str] = None
+    name: str | None = None
+    note: str | None = None
+    value: str | None = None
+    secret: str | None = None
+    status: str | None = None
+    created: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -159,12 +158,12 @@ class APIKey(BaseModel):
 class Secret(BaseModel):
     id: str
     object: str = "secret"
-    name: Optional[str] = None
-    organization: Optional[str] = None
-    machine: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
-    meta: Optional[Dict[str, Any]] = None
-    value: Optional[str] = None
+    name: str | None = None
+    organization: str | None = None
+    machine: str | None = None
+    data: dict[str, Any] | None = None
+    meta: dict[str, Any] | None = None
+    value: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -175,23 +174,12 @@ class AuthToken(BaseModel):
     object: str = "token"
     access: str
     refresh: str
-    email: Optional[str] = None
-    id: Optional[str] = None
-    name: Optional[str] = None
-    membership: Optional[str] = None
-    organization: Optional[str] = None
-    machine: Optional[str] = None
-
-
-class AuthIntent(BaseModel):
-    object: str = "intent"
-    type: str
-    status: Optional[str] = None
-    expires: Optional[str] = None
-    id: Optional[str] = None
-    host: Optional[str] = None
-    redirect_url: Optional[str] = None
-    url: Optional[str] = None
+    email: str | None = None
+    id: str | None = None
+    name: str | None = None
+    membership: str | None = None
+    organization: str | None = None
+    machine: str | None = None
 
 
 class DeviceAuthorization(BaseModel):
@@ -204,45 +192,16 @@ class DeviceAuthorization(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Engrams
-# ---------------------------------------------------------------------------
-
-class Engram(BaseModel):
-    id: str
-    object: str = "engram"
-    name: Optional[str] = None
-    organization: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
-    meta: Optional[Dict[str, Any]] = None
-    created: Optional[str] = None
-    modified: Optional[str] = None
-
-
-# ---------------------------------------------------------------------------
-# Environments
-# ---------------------------------------------------------------------------
-
-class Environment(BaseModel):
-    id: str
-    object: str = "environment"
-    name: Optional[str] = None
-    slug: Optional[str] = None
-    organization: Optional[str] = None
-    created: Optional[str] = None
-    modified: Optional[str] = None
-
-
-# ---------------------------------------------------------------------------
 # Memberships
 # ---------------------------------------------------------------------------
 
 class Membership(BaseModel):
     id: str
     object: str = "membership"
-    organization: Optional[str] = None
-    account: Optional[str] = None
-    role: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    organization: str | None = None
+    account: str | None = None
+    role: str | None = None
+    data: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -252,10 +211,10 @@ class Membership(BaseModel):
 class Subscription(BaseModel):
     id: str
     object: str = "subscription"
-    organization: Optional[str] = None
-    plan: Optional[str] = None
-    status: Optional[str] = None
-    data: Optional[Dict[str, Any]] = None
+    organization: str | None = None
+    plan: str | None = None
+    status: str | None = None
+    data: dict[str, Any] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -264,7 +223,7 @@ class Subscription(BaseModel):
 
 class ImageGeneration(BaseModel):
     object: str = "image.generation"
-    data: Optional[List[Dict[str, Any]]] = None
+    data: list[dict[str, Any]] | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -273,7 +232,7 @@ class ImageGeneration(BaseModel):
 
 class AudioSpeech(BaseModel):
     object: str = "audio.speech"
-    data: Optional[bytes] = None
+    data: bytes | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -282,5 +241,5 @@ class AudioSpeech(BaseModel):
 
 class Embedding(BaseModel):
     object: str = "embedding"
-    embedding: Optional[List[float]] = None
+    embedding: list[float] | None = None
     index: int = 0

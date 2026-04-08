@@ -1,4 +1,4 @@
-"""Configuration management for the Layerbrain SDK and CLI.
+"""Configuration management for the Layerbrain SDK.
 
 Reads from:
   1. Environment variables (LAYERBRAIN_API_KEY, LAYERBRAIN_BASE_URL)

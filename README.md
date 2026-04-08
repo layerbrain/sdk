@@ -1,20 +1,39 @@
-# Layerbrain Python SDK
+# Layerbrain CLI
 
 [![PyPI version](https://img.shields.io/pypi/v/layerbrain.svg)](https://pypi.org/project/layerbrain/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/layerbrain/layerbrain-python/blob/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/layerbrain/layerbrain/blob/main/LICENSE)
 
 The official Python SDK and CLI for the [Layerbrain](https://layerbrain.com) API.
 
 ## Installation
 
 ```sh
-# SDK only
 pip install layerbrain
-
-# SDK + CLI
-pip install layerbrain[cli]
 ```
+
+For a global CLI install with `uv`:
+
+```sh
+uv tool install layerbrain
+```
+
+For a `uv`-managed project dependency:
+
+```sh
+uv add layerbrain
+```
+
+For a one-off run without installing the tool globally:
+
+```sh
+uvx layerbrain --help
+```
+
+All of these give you the same package. `layerbrain` includes both:
+
+- the Python SDK via `from layerbrain import Layerbrain`
+- the `layerbrain` command-line interface
 
 ## Quick Start
 
@@ -22,6 +41,42 @@ pip install layerbrain[cli]
 from layerbrain import Layerbrain
 
 client = Layerbrain()
+```
+
+## CLI
+
+```sh
+layerbrain login
+layerbrain whoami
+layerbrain models list
+layerbrain machines list
+layerbrain listen --events machine.created
+layerbrain webhooks list
+layerbrain networks list
+```
+
+You can also run the CLI via:
+
+```sh
+python -m layerbrain
+```
+
+To update a standalone install:
+
+```sh
+layerbrain upgrade
+```
+
+Or, if you installed it with `uv tool`:
+
+```sh
+uv tool upgrade layerbrain
+```
+
+If `layerbrain` is a dependency in a `uv` project:
+
+```sh
+uv add --upgrade-package layerbrain layerbrain
 ```
 
 The client reads your API key from the `LAYERBRAIN_API_KEY` environment variable by default. You can also pass it explicitly:
@@ -72,9 +127,9 @@ machine = client.machines.retrieve("mach_abc123")
 client.machines.delete("mach_abc123")
 ```
 
-### Machine Connect (WebSocket)
+### Connect to a Machine (WebSocket)
 
-Connect to a running machine via WebSocket for shell and filesystem access:
+Open a live machine session over WebSocket for shell and filesystem access:
 
 ```python
 import asyncio
@@ -83,7 +138,7 @@ from layerbrain import Layerbrain
 async def main():
     client = Layerbrain()
 
-    # Connect to a running machine via WebSocket
+    # Open a live machine session over WebSocket
     async with await client.machines.connect("mach_abc123") as conn:
         # Shell - execute commands
         result = await conn.shell.execute("ls -la ~/brain")
@@ -149,13 +204,9 @@ model = client.models.retrieve("meta-llama/llama-3.1-8b")
 
 ```python
 # Web search
-results = client.tools.search(query="python httpx tutorial", count=5)
+results = client.tools.web_search(query="python httpx tutorial", count=5)
 for r in results["results"]:
     print(r["title"], r["url"])
-
-# Fetch page content
-page = client.tools.fetch(url="https://example.com")
-print(page["content"])
 ```
 
 ### Secrets
@@ -226,59 +277,6 @@ except APIError as e:
 | 503 | `CapacityError` |
 | N/A | `ConnectionError` |
 | N/A | `TimeoutError` |
-
-## CLI
-
-Requires `pip install layerbrain[cli]`.
-
-```sh
-# Account
-layerbrain login
-layerbrain whoami
-layerbrain logout
-layerbrain upgrade
-
-# AI
-layerbrain chat completions create --model meta-llama/llama-3.1-8b --message "Hello"
-layerbrain models list
-layerbrain models get meta-llama/llama-3.1-8b
-layerbrain embeddings create --model BAAI/bge-large-en-v1.5 --input "Hello world"
-layerbrain images generate --model black-forest-labs/flux-schnell --prompt "A cat"
-layerbrain audio speech --model hexgrad/kokoro --input "Hello world"
-
-# Tools
-layerbrain tools search --query "python httpx"
-layerbrain tools fetch --url "https://example.com"
-
-# Brain
-layerbrain brains create
-layerbrain engrams list
-layerbrain engrams create --name "my-session"
-
-# Compute & Machines
-layerbrain compute list
-layerbrain machines list
-layerbrain machines create --compute na-us-ca-sfo_s.small --duration 60
-layerbrain machines get mach_abc123
-layerbrain machines delete mach_abc123
-
-# SSH into a machine (interactive session)
-layerbrain machines ssh --id mach_abc123
-layerbrain machines ssh --id mach_abc123 --user root
-
-# Infrastructure
-layerbrain environments list
-layerbrain secrets list
-layerbrain secrets create --name HF_TOKEN --value "hf_..."
-layerbrain organizations list
-layerbrain api-keys list
-layerbrain api-keys create --name "production"
-
-# Config
-layerbrain config set default_output json
-```
-
-All list commands support `--output json` for JSON output.
 
 ## Configuration
 
