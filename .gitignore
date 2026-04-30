@@ -33,4 +33,7 @@ env/
 .coverage
 htmlcov/
 
+node_modules/
+coverage/
+
 ~/.layerbrain/
