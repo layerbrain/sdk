@@ -2,9 +2,8 @@
 """Generate SDK resource classes from the OpenAPI spec.
 
 Usage:
-    python scripts/generate.py                          # Pull latest spec + generate
-    python scripts/generate.py --spec path/to/spec.json # Use local spec
-    python scripts/generate.py --no-pull                # Use cached spec
+    python scripts/generate.py                          # Generate from openapi/openapi.json
+    python scripts/generate.py --spec path/to/spec.json # Import spec, mirror it, and generate
     python scripts/generate.py --dry-run                # Preview only
 """
 
@@ -19,13 +18,11 @@ from pathlib import Path
 from typing import Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-SDK_DIR = PROJECT_ROOT / "layerbrain" / "sdk"
+SDK_DIR = PROJECT_ROOT / "layerbrain-python" / "layerbrain" / "sdk"
 RESOURCES_DIR = SDK_DIR / "resources"
 OPENAPI_DIR = PROJECT_ROOT / "openapi"
 REPO_SPEC_FILE = OPENAPI_DIR / "openapi.json"
 VENDORED_SPEC_FILE = SDK_DIR / "openapi" / "openapi.json"
-
-SPEC_URL = "https://raw.githubusercontent.com/layerbrain/openapi/main/openapi.json"
 
 # Tags to skip entirely (not user-facing)
 SKIP_TAGS = {"Health", "Username"}
@@ -177,11 +174,10 @@ def parse_spec(spec: dict) -> list[Resource]:
 def _relative_method_name(ep: Endpoint, res: Resource) -> str:
     """Build a method name from all non-param path segments after the resource base.
 
-    E.g. for auth resource:
-        /auth/device         → "device"
-        /auth/device/confirm → "device_confirm"
-        /auth/intents/{id}/confirm → "intent_confirm"
-        /auth/token/refresh  → "token_refresh"
+    E.g. for storage resource:
+        /storage/backends              → "backend"
+        /storage/backends/{id}/validate → "backend_validate"
+        /storage/buckets/{id}/presign  → "bucket_presign"
     """
     base_path = f"/{res.module_name}" if res.module_name != "models" else "/models"
     # Strip the base prefix from the path
@@ -324,7 +320,7 @@ def _method_name(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[
         return candidate
 
     if ep.method == "delete":
-        # Check for sub-path deletes (e.g. /engrams/delete-all vs /engrams/{id})
+        # Check for sub-path deletes (e.g. /storage/keys/{id} vs /storage/buckets/{id})
         parts = ep.path.rstrip("/").split("/")
         last = parts[-1]
         if not last.startswith("{") and last != res.module_name:
@@ -511,21 +507,6 @@ def generate_init(resources: list[Resource]) -> str:
     return '"""SDK resource classes (auto-generated + hand-written)."""\n\n' + "\n".join(sorted(imports)) + "\n\n__all__ = [\n" + "\n".join(f'    "{n}",' for n in sorted(names)) + "\n]\n"
 
 
-# ---------------------------------------------------------------------------
-# Pull
-# ---------------------------------------------------------------------------
-
-def pull_spec(url: Optional[str] = None) -> dict:
-    import httpx
-    target = url or SPEC_URL
-    print(f"Pulling {target}")
-    resp = httpx.get(target, timeout=30.0, follow_redirects=True)
-    resp.raise_for_status()
-    spec = resp.json()
-    write_spec_files(spec)
-    return spec
-
-
 def write_spec_files(spec: dict) -> None:
     serialized = json.dumps(spec, indent=2) + "\n"
     OPENAPI_DIR.mkdir(parents=True, exist_ok=True)
@@ -543,18 +524,14 @@ def write_spec_files(spec: dict) -> None:
 def main():
     parser = argparse.ArgumentParser(description="Generate SDK resources from OpenAPI spec")
     parser.add_argument("--spec", help="Local openapi.json path")
-    parser.add_argument("--no-pull", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--url", help="Override spec URL")
     args = parser.parse_args()
 
     if args.spec:
         spec = json.loads(Path(args.spec).read_text())
         write_spec_files(spec)
-    elif args.no_pull:
-        spec = json.loads(REPO_SPEC_FILE.read_text())
     else:
-        spec = pull_spec(args.url)
+        spec = json.loads(REPO_SPEC_FILE.read_text())
 
     resources = parse_spec(spec)
 
@@ -578,8 +555,8 @@ def main():
         print("\nWould generate:")
         for r in resources:
             if r.module_name not in PRESERVED_MODULES:
-                print(f"  sdk/resources/{r.module_name}.py")
-        print(f"  sdk/resources/__init__.py")
+                print(f"  layerbrain-python/layerbrain/sdk/resources/{r.module_name}.py")
+        print("  layerbrain-python/layerbrain/sdk/resources/__init__.py")
         return
 
     gen_resources = [r for r in resources if r.module_name not in PRESERVED_MODULES]
