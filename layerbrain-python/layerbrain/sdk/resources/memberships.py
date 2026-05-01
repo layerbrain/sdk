@@ -36,6 +36,14 @@ class Memberships(Resource):
         """Create memberships or membership invites."""
         return await self._post("/memberships", json=kwargs)
 
+    async def delete(self, id: str) -> dict:
+        """Delete destroy"""
+        return await self._delete(f"/memberships/{id}")
+
     async def retrieve(self, id: str) -> dict:
         """Retrieve a single membership."""
         return await self._get(f"/memberships/{id}", params=None)
+
+    async def update(self, id: str, **kwargs: Any) -> dict:
+        """Patch patch"""
+        return await self._patch(f"/memberships/{id}", json=kwargs)

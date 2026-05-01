@@ -5,7 +5,7 @@ import { ResourceBase, type JsonObject, type ListParams } from './base.js';
 
 export class AccountsResource extends ResourceBase {
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/accounts', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/accounts', params);
   }
 
   delete(id: string): Promise<JsonObject> {
@@ -27,7 +27,7 @@ export class APIKeysResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/api-keys', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/api-keys', params);
   }
 
   delete(id: string): Promise<JsonObject> {
@@ -62,6 +62,10 @@ export class BrainsResource extends ResourceBase {
     return this.post('/brains', body);
   }
 
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/brains', params);
+  }
+
   delete(id: string): Promise<JsonObject> {
     return super.delete(`/brains/${encodeURIComponent(id)}`);
   }
@@ -75,19 +79,33 @@ export class BrainsResource extends ResourceBase {
   }
 }
 
-export class ComputeResource extends ResourceBase {
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/compute', { page: 1, pageSize: 10, ...params });
-  }
-
-  retrieve(id: string): Promise<JsonObject> {
-    return this.get(`/compute/${encodeURIComponent(id)}`);
-  }
-}
-
 export class EmbeddingsResource extends ResourceBase {
   create(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/embeddings', body);
+  }
+}
+
+export class ExportsResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/exports', body);
+  }
+
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/exports', params);
+  }
+
+  download(id: string): Promise<JsonObject> {
+    return this.get(`/exports/${encodeURIComponent(id)}/download`);
+  }
+}
+
+export class EventsResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/events', params);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(`/events/${encodeURIComponent(id)}`);
   }
 }
 
@@ -108,7 +126,7 @@ export class MachinesResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/machines', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/machines', params);
   }
 
   delete(machineId: string): Promise<JsonObject> {
@@ -161,17 +179,25 @@ export class MembershipsResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/memberships', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/memberships', params);
+  }
+
+  delete(id: string): Promise<JsonObject> {
+    return super.delete(`/memberships/${encodeURIComponent(id)}`);
   }
 
   retrieve(id: string): Promise<JsonObject> {
     return this.get(`/memberships/${encodeURIComponent(id)}`);
   }
+
+  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/memberships/${encodeURIComponent(id)}`, body);
+  }
 }
 
 export class ModelsResource extends ResourceBase {
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/models', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/models', params);
   }
 
   retrieve(modelId: string): Promise<JsonObject> {
@@ -179,49 +205,37 @@ export class ModelsResource extends ResourceBase {
   }
 }
 
-export class NetworksResource extends ResourceBase {
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/networks', { page: 1, pageSize: 10, ...params });
+export class ComputeResource extends ResourceBase {
+  computeDisabled(): Promise<JsonObject> {
+    return this.get('/compute');
   }
 
-  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
-    return this.patch(`/networks/${encodeURIComponent(id)}`, body);
+  createComputeDisabled(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/compute', body);
   }
 
-  retrieve(id: string): Promise<JsonObject> {
-    return this.get(`/networks/${encodeURIComponent(id)}`);
-  }
-}
-
-export class NetworkRulesResource extends ResourceBase {
-  create(body: JsonObject = {}): Promise<JsonObject> {
-    return this.post('/network/rules', body);
+  updateComputeDisabled(body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch('/compute', body);
   }
 
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/network/rules', { page: 1, pageSize: 10, ...params });
+  deleteComputeDisabled(): Promise<JsonObject> {
+    return super.delete('/compute');
   }
 
-  delete(id: string): Promise<JsonObject> {
-    return super.delete(`/network/rules/${encodeURIComponent(id)}`);
+  computePathDisabled(path: string): Promise<JsonObject> {
+    return this.get(`/compute/${encodeURIComponent(path)}`);
   }
 
-  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
-    return this.patch(`/network/rules/${encodeURIComponent(id)}`, body);
+  createComputePathDisabled(path: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/compute/${encodeURIComponent(path)}`, body);
   }
 
-  retrieve(id: string): Promise<JsonObject> {
-    return this.get(`/network/rules/${encodeURIComponent(id)}`);
-  }
-}
-
-export class NetworkFlowsResource extends ResourceBase {
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/network/flows', { page: 1, pageSize: 10, ...params });
+  updateComputePathDisabled(path: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/compute/${encodeURIComponent(path)}`, body);
   }
 
-  retrieve(id: string): Promise<JsonObject> {
-    return this.get(`/network/flows/${encodeURIComponent(id)}`);
+  deleteComputePathDisabled(path: string): Promise<JsonObject> {
+    return super.delete(`/compute/${encodeURIComponent(path)}`);
   }
 }
 
@@ -231,7 +245,7 @@ export class OrganizationsResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/organizations', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/organizations', params);
   }
 
   delete(id: string): Promise<JsonObject> {
@@ -247,13 +261,89 @@ export class OrganizationsResource extends ResourceBase {
   }
 }
 
+export class PlansResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/plans', body);
+  }
+
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/plans', params);
+  }
+
+  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/plans/${encodeURIComponent(id)}`, body);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(`/plans/${encodeURIComponent(id)}`);
+  }
+
+  addItems(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/items`, body);
+  }
+
+  deleteItems(id: string): Promise<JsonObject> {
+    return super.delete(`/plans/${encodeURIComponent(id)}/items`);
+  }
+
+  updateItems(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/plans/${encodeURIComponent(id)}/items`, body);
+  }
+
+  cancel(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/cancel`, body);
+  }
+
+  createComment(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/comments`, body);
+  }
+
+  listComments(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/plans/${encodeURIComponent(id)}/comments`, params);
+  }
+
+  listActivity(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/plans/${encodeURIComponent(id)}/activity`, params);
+  }
+
+  resume(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/resume`, body);
+  }
+
+  start(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/start`, body);
+  }
+
+  createItemComment(id: string, item: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/plans/${encodeURIComponent(id)}/items/${encodeURIComponent(item)}/comments`, body);
+  }
+
+  listItemComments(id: string, item: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/plans/${encodeURIComponent(id)}/items/${encodeURIComponent(item)}/comments`, params);
+  }
+
+  listItemActivity(id: string, item: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/plans/${encodeURIComponent(id)}/items/${encodeURIComponent(item)}/activity`, params);
+  }
+}
+
+export class WorkResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/work', params);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(`/work/${encodeURIComponent(id)}`);
+  }
+}
+
 export class SecretsResource extends ResourceBase {
   create(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/secrets', body);
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/secrets', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/secrets', params);
   }
 
   delete(id: string): Promise<JsonObject> {
@@ -275,7 +365,7 @@ export class SecretsResource extends ResourceBase {
 
 export class StatementsResource extends ResourceBase {
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/statements', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/statements', params);
   }
 
   retrieve(statementId: string): Promise<JsonObject> {
@@ -284,32 +374,16 @@ export class StatementsResource extends ResourceBase {
 }
 
 export class StorageResource extends ResourceBase {
-  createBackend(body: JsonObject = {}): Promise<JsonObject> {
-    return this.post('/storage/backends', body);
-  }
-
-  listBackends(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/storage/backends', { page: 1, pageSize: 10, ...params });
-  }
-
   createBucket(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/storage/buckets', body);
   }
 
   listBuckets(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/storage/buckets', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/storage/buckets', params);
   }
 
-  deleteBackend(id: string): Promise<JsonObject> {
-    return super.delete(`/storage/backends/${encodeURIComponent(id)}`);
-  }
-
-  updateBackend(id: string, body: JsonObject = {}): Promise<JsonObject> {
-    return this.patch(`/storage/backends/${encodeURIComponent(id)}`, body);
-  }
-
-  retrieveBackend(id: string): Promise<JsonObject> {
-    return this.get(`/storage/backends/${encodeURIComponent(id)}`);
+  searchStorageObjects(): Promise<JsonObject> {
+    return this.get('/storage/objects/search');
   }
 
   deleteBucket(id: string): Promise<JsonObject> {
@@ -328,20 +402,40 @@ export class StorageResource extends ResourceBase {
     return super.delete(`/storage/keys/${encodeURIComponent(id)}`);
   }
 
+  createBucketFolder(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/storage/buckets/${encodeURIComponent(id)}/folders`, body);
+  }
+
   createBucketKey(id: string, body: JsonObject = {}): Promise<JsonObject> {
     return this.post(`/storage/buckets/${encodeURIComponent(id)}/keys`, body);
   }
 
   listBucketKeys(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource(`/storage/buckets/${encodeURIComponent(id)}/keys`, { page: 1, pageSize: 10, ...params });
+    return this.listResource(`/storage/buckets/${encodeURIComponent(id)}/keys`, params);
+  }
+
+  listBucketObjects(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/storage/buckets/${encodeURIComponent(id)}/objects`, params);
   }
 
   presignBucket(id: string, body: JsonObject = {}): Promise<JsonObject> {
     return this.post(`/storage/buckets/${encodeURIComponent(id)}/presign`, body);
   }
 
-  validateBackend(id: string): Promise<JsonObject> {
-    return this.post(`/storage/backends/${encodeURIComponent(id)}/validate`, {});
+  copyBucketObject(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/storage/buckets/${encodeURIComponent(id)}/objects/copy`, body);
+  }
+
+  deleteBucketObject(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/storage/buckets/${encodeURIComponent(id)}/objects/delete`, body);
+  }
+
+  headBucketObject(id: string): Promise<JsonObject> {
+    return this.get(`/storage/buckets/${encodeURIComponent(id)}/objects/head`);
+  }
+
+  moveBucketObject(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/storage/buckets/${encodeURIComponent(id)}/objects/move`, body);
   }
 }
 
@@ -351,7 +445,7 @@ export class SubscriptionsResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/subscriptions', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/subscriptions', params);
   }
 
   retrieve(subscriptionId: string): Promise<JsonObject> {
@@ -360,24 +454,36 @@ export class SubscriptionsResource extends ResourceBase {
 }
 
 export class SnapshotsResource extends ResourceBase {
-  create(body: JsonObject = {}): Promise<JsonObject> {
+  snapshotsDisabled(): Promise<JsonObject> {
+    return this.get('/snapshots');
+  }
+
+  createSnapshotsDisabled(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/snapshots', body);
   }
 
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/snapshots', { page: 1, pageSize: 10, ...params });
+  updateSnapshotsDisabled(body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch('/snapshots', body);
   }
 
-  retrieve(id: string): Promise<JsonObject> {
-    return this.get(`/snapshots/${encodeURIComponent(id)}`);
+  deleteSnapshotsDisabled(): Promise<JsonObject> {
+    return super.delete('/snapshots');
   }
 
-  download(id: string): Promise<JsonObject> {
-    return this.get(`/snapshots/${encodeURIComponent(id)}/download`);
+  snapshotsPathDisabled(path: string): Promise<JsonObject> {
+    return this.get(`/snapshots/${encodeURIComponent(path)}`);
   }
 
-  restore(id: string, body: JsonObject = {}): Promise<JsonObject> {
-    return this.post(`/snapshots/${encodeURIComponent(id)}/restore`, body);
+  createSnapshotsPathDisabled(path: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/snapshots/${encodeURIComponent(path)}`, body);
+  }
+
+  updateSnapshotsPathDisabled(path: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/snapshots/${encodeURIComponent(path)}`, body);
+  }
+
+  deleteSnapshotsPathDisabled(path: string): Promise<JsonObject> {
+    return super.delete(`/snapshots/${encodeURIComponent(path)}`);
   }
 }
 
@@ -388,12 +494,6 @@ export class ThreeDResource extends ResourceBase {
 
   retrieve(generationId: string): Promise<JsonObject> {
     return this.get(`/3d/generations/${encodeURIComponent(generationId)}`);
-  }
-}
-
-export class ToolsResource extends ResourceBase {
-  webSearch(body: JsonObject = {}): Promise<JsonObject> {
-    return this.post('/tools/web-search', body);
   }
 }
 
@@ -413,7 +513,7 @@ export class WebhooksResource extends ResourceBase {
   }
 
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/webhooks', { page: 1, pageSize: 10, ...params });
+    return this.listResource('/webhooks', params);
   }
 
   delete(id: string): Promise<JsonObject> {
@@ -428,8 +528,24 @@ export class WebhooksResource extends ResourceBase {
     return this.get(`/webhooks/${encodeURIComponent(id)}`);
   }
 
+  deliveries(id: string): Promise<JsonObject> {
+    return this.get(`/webhooks/${encodeURIComponent(id)}/deliveries`);
+  }
+
   rotateSecret(id: string): Promise<JsonObject> {
     return this.post(`/webhooks/${encodeURIComponent(id)}/rotate-secret`, {});
+  }
+
+  signingSecret(id: string): Promise<JsonObject> {
+    return this.get(`/webhooks/${encodeURIComponent(id)}/signing-secret`);
+  }
+
+  test(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/webhooks/${encodeURIComponent(id)}/test`, body);
+  }
+
+  delivery(id: string, deliveryId: string): Promise<JsonObject> {
+    return this.get(`/webhooks/${encodeURIComponent(id)}/deliveries/${encodeURIComponent(deliveryId)}`);
   }
 
   listenRequest(options: { events?: string | string[] } = {}): { url: string; headers: Record<string, string> } {

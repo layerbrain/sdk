@@ -33,7 +33,6 @@ from .commands.statements import app as statements_app
 from .commands.storage import app as storage_app
 from .commands.subscriptions import app as subscriptions_app
 from .commands.threed import app as threed_app
-from .commands.tools import app as tools_app
 from .commands.upgrade import upgrade
 from .commands.videos import app as videos_app
 from .commands.webhooks import app as webhooks_app
@@ -53,9 +52,6 @@ app.add_typer(images_app, name="images", rich_help_panel="AI")
 app.add_typer(audio_app, name="audio", rich_help_panel="AI")
 app.add_typer(videos_app, name="videos", rich_help_panel="AI")
 app.add_typer(threed_app, name="3d", rich_help_panel="AI")
-
-# Tools
-app.add_typer(tools_app, name="tools", rich_help_panel="Tools")
 
 # Brain
 app.add_typer(brains_app, name="brains", rich_help_panel="Brain")

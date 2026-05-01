@@ -53,16 +53,17 @@ class TestPublicSDKSurface(unittest.TestCase):
         client = Layerbrain(api_key="sk_test", base_url="https://api.layerbrain.test")
         try:
             for resource_name in (
-                "networks",
-                "network_rules",
-                "network_flows",
-                "snapshots",
+                "events",
+                "exports",
+                "plans",
                 "storage",
                 "webhooks",
+                "work",
             ):
                 self.assertTrue(hasattr(client, resource_name))
             self.assertFalse(hasattr(client, "auth"))
             self.assertFalse(hasattr(client, "engrams"))
+            self.assertFalse(hasattr(client, "tools"))
         finally:
             client.close()
 

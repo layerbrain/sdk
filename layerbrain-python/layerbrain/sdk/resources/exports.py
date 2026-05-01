@@ -6,8 +6,8 @@ from .._resource import Resource
 from .._pagination import SyncPage
 
 
-class NetworkRules(Resource):
-    """Network_Rules API resource (auto-generated)."""
+class Exports(Resource):
+    """Exports API resource (auto-generated)."""
 
     async def list(
         self,
@@ -15,8 +15,8 @@ class NetworkRules(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """Get list_network_rules"""
-        request_path = "/network/rules"
+        """Get list"""
+        request_path = "/exports"
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -33,17 +33,9 @@ class NetworkRules(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Post create_network_rule"""
-        return await self._post("/network/rules", json=kwargs)
+        """Post create"""
+        return await self._post("/exports", json=kwargs)
 
-    async def delete(self, id: str) -> dict:
-        """Delete delete_network_rule"""
-        return await self._delete(f"/network/rules/{id}")
-
-    async def retrieve(self, id: str) -> dict:
-        """Get retrieve_network_rule"""
-        return await self._get(f"/network/rules/{id}", params=None)
-
-    async def update(self, id: str, **kwargs: Any) -> dict:
-        """Patch patch_network_rule"""
-        return await self._patch(f"/network/rules/{id}", json=kwargs)
+    async def download(self, id: str) -> dict:
+        """Get download"""
+        return await self._get(f"/exports/{id}/download", params=None)

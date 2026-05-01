@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .._resource import Resource
 from .._pagination import SyncPage
@@ -9,22 +9,14 @@ from .._pagination import SyncPage
 class Snapshots(Resource):
     """Snapshots API resource (auto-generated)."""
 
-    async def list(
-        self,
-        page: Optional[int] = 1,
-        page_size: Optional[int] = 10,
-        ordering: Optional[str] = None,
-    ) -> SyncPage:
-        """List snapshots for the authenticated organization."""
+    async def delete(self) -> dict:
+        """Delete snapshots_disabled"""
+        return await self._delete("/snapshots")
+
+    async def list(self) -> SyncPage:
+        """Get snapshots_disabled"""
         request_path = "/snapshots"
-        params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if page_size is not None:
-            params["page_size"] = page_size
-        if ordering is not None:
-            params["ordering"] = ordering
-        data = await self._get(request_path, params=params or None)
+        data = await self._get(request_path, params=None)
         return SyncPage(
             data=data.get("data", []),
             has_more=data.get("has_more", False),
@@ -33,17 +25,21 @@ class Snapshots(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Create a snapshot for a machine."""
+        """Post snapshots_disabled"""
         return await self._post("/snapshots", json=kwargs)
 
-    async def retrieve(self, id: str) -> dict:
-        """Retrieve snapshot metadata by ID."""
-        return await self._get(f"/snapshots/{id}", params=None)
+    async def snapshots_path_disabled(self, path: str) -> dict:
+        """Delete snapshots_path_disabled"""
+        return await self._delete(f"/snapshots/{path}")
 
-    async def download(self, id: str) -> dict:
-        """Create a download payload for a snapshot."""
-        return await self._get(f"/snapshots/{id}/download", params=None)
+    async def retrieve(self, path: str) -> dict:
+        """Get snapshots_path_disabled"""
+        return await self._get(f"/snapshots/{path}", params=None)
 
-    async def restore(self, id: str, **kwargs: Any) -> dict:
-        """Restore snapshot contents to a target machine."""
-        return await self._post(f"/snapshots/{id}/restore", json=kwargs)
+    async def update(self, path: str, **kwargs: Any) -> dict:
+        """Patch snapshots_path_disabled"""
+        return await self._patch(f"/snapshots/{path}", json=kwargs)
+
+    async def create_snapshots_path_disabled(self, path: str, **kwargs: Any) -> dict:
+        """Post snapshots_path_disabled"""
+        return await self._post(f"/snapshots/{path}", json=kwargs)

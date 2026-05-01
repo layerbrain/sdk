@@ -6,8 +6,8 @@ from .._resource import Resource
 from .._pagination import SyncPage
 
 
-class NetworkFlows(Resource):
-    """Network_Flows API resource (auto-generated)."""
+class Work(Resource):
+    """Work API resource (auto-generated)."""
 
     async def list(
         self,
@@ -15,8 +15,8 @@ class NetworkFlows(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """Get list_network_flows"""
-        request_path = "/network/flows"
+        """Get list"""
+        request_path = "/work"
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -33,5 +33,5 @@ class NetworkFlows(Resource):
         )
 
     async def retrieve(self, id: str) -> dict:
-        """Get retrieve_network_flow"""
-        return await self._get(f"/network/flows/{id}", params=None)
+        """Get retrieve"""
+        return await self._get(f"/work/{id}", params=None)

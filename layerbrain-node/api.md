@@ -33,6 +33,7 @@
 ## Brains
 
 - `client.brains.create(body?)`
+- `client.brains.list(params?)`
 - `client.brains.delete(id)`
 - `client.brains.retrieve(id)`
 - `client.brains.archive(id)`
@@ -43,12 +44,29 @@
 
 ## Compute
 
-- `client.compute.list(params?)`
-- `client.compute.retrieve(id)`
+- `client.compute.computeDisabled()`
+- `client.compute.createComputeDisabled(body?)`
+- `client.compute.updateComputeDisabled(body?)`
+- `client.compute.deleteComputeDisabled()`
+- `client.compute.computePathDisabled(path)`
+- `client.compute.createComputePathDisabled(path, body?)`
+- `client.compute.updateComputePathDisabled(path, body?)`
+- `client.compute.deleteComputePathDisabled(path)`
 
 ## Embeddings
 
 - `client.embeddings.create(body?)`
+
+## Events
+
+- `client.events.list(params?)`
+- `client.events.retrieve(id)`
+
+## Exports
+
+- `client.exports.create(body?)`
+- `client.exports.list(params?)`
+- `client.exports.download(id)`
 
 ## Images
 
@@ -70,31 +88,14 @@
 
 - `client.memberships.create(body?)`
 - `client.memberships.list(params?)`
+- `client.memberships.delete(id)`
 - `client.memberships.retrieve(id)`
+- `client.memberships.update(id, body?)`
 
 ## Models
 
 - `client.models.list(params?)`
 - `client.models.retrieve(modelId)`
-
-## Network Flows
-
-- `client.networkFlows.list(params?)`
-- `client.networkFlows.retrieve(id)`
-
-## Network Rules
-
-- `client.networkRules.create(body?)`
-- `client.networkRules.list(params?)`
-- `client.networkRules.delete(id)`
-- `client.networkRules.update(id, body?)`
-- `client.networkRules.retrieve(id)`
-
-## Networks
-
-- `client.networks.list(params?)`
-- `client.networks.update(id, body?)`
-- `client.networks.retrieve(id)`
 
 ## Organizations
 
@@ -103,6 +104,25 @@
 - `client.organizations.delete(id)`
 - `client.organizations.retrieve(id)`
 - `client.organizations.update(id, body?)`
+
+## Plans
+
+- `client.plans.create(body?)`
+- `client.plans.list(params?)`
+- `client.plans.update(id, body?)`
+- `client.plans.retrieve(id)`
+- `client.plans.addItems(id, body?)`
+- `client.plans.deleteItems(id)`
+- `client.plans.updateItems(id, body?)`
+- `client.plans.cancel(id, body?)`
+- `client.plans.createComment(id, body?)`
+- `client.plans.listComments(id, params?)`
+- `client.plans.listActivity(id, params?)`
+- `client.plans.resume(id, body?)`
+- `client.plans.start(id, body?)`
+- `client.plans.createItemComment(id, item, body?)`
+- `client.plans.listItemComments(id, item, params?)`
+- `client.plans.listItemActivity(id, item, params?)`
 
 ## Secrets
 
@@ -115,11 +135,14 @@
 
 ## Snapshots
 
-- `client.snapshots.create(body?)`
-- `client.snapshots.list(params?)`
-- `client.snapshots.retrieve(id)`
-- `client.snapshots.download(id)`
-- `client.snapshots.restore(id, body?)`
+- `client.snapshots.snapshotsDisabled()`
+- `client.snapshots.createSnapshotsDisabled(body?)`
+- `client.snapshots.updateSnapshotsDisabled(body?)`
+- `client.snapshots.deleteSnapshotsDisabled()`
+- `client.snapshots.snapshotsPathDisabled(path)`
+- `client.snapshots.createSnapshotsPathDisabled(path, body?)`
+- `client.snapshots.updateSnapshotsPathDisabled(path, body?)`
+- `client.snapshots.deleteSnapshotsPathDisabled(path)`
 
 ## Statements
 
@@ -128,31 +151,28 @@
 
 ## Storage
 
-- `client.storage.createBackend(body?)`
-- `client.storage.listBackends(params?)`
 - `client.storage.createBucket(body?)`
 - `client.storage.listBuckets(params?)`
-- `client.storage.deleteBackend(id)`
-- `client.storage.updateBackend(id, body?)`
-- `client.storage.retrieveBackend(id)`
+- `client.storage.searchStorageObjects()`
 - `client.storage.deleteBucket(id)`
 - `client.storage.updateBucket(id, body?)`
 - `client.storage.retrieveBucket(id)`
 - `client.storage.deleteBucketKey(id)`
+- `client.storage.createBucketFolder(id, body?)`
 - `client.storage.createBucketKey(id, body?)`
 - `client.storage.listBucketKeys(id, params?)`
+- `client.storage.listBucketObjects(id, params?)`
 - `client.storage.presignBucket(id, body?)`
-- `client.storage.validateBackend(id)`
+- `client.storage.copyBucketObject(id, body?)`
+- `client.storage.deleteBucketObject(id, body?)`
+- `client.storage.headBucketObject(id)`
+- `client.storage.moveBucketObject(id, body?)`
 
 ## Subscriptions
 
 - `client.subscriptions.create(body?)`
 - `client.subscriptions.list(params?)`
 - `client.subscriptions.retrieve(subscriptionId)`
-
-## Tools
-
-- `client.tools.webSearch(body?)`
 
 ## Videos
 
@@ -167,4 +187,13 @@
 - `client.webhooks.delete(id)`
 - `client.webhooks.update(id, body?)`
 - `client.webhooks.retrieve(id)`
+- `client.webhooks.deliveries(id)`
 - `client.webhooks.rotateSecret(id)`
+- `client.webhooks.signingSecret(id)`
+- `client.webhooks.test(id, body?)`
+- `client.webhooks.delivery(id, deliveryId)`
+
+## Work
+
+- `client.work.list(params?)`
+- `client.work.retrieve(id)`

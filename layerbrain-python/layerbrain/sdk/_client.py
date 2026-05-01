@@ -1,7 +1,4 @@
-"""Core HTTP client for the Layerbrain SDK.
-
-Provides both synchronous (Layerbrain) and asynchronous (AsyncLayerbrain) clients.
-"""
+"""Core HTTP clients for the Layerbrain SDK."""
 
 from __future__ import annotations
 

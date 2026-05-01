@@ -20,6 +20,7 @@ from typing import Optional
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SDK_DIR = PROJECT_ROOT / "layerbrain-python" / "layerbrain" / "sdk"
 RESOURCES_DIR = SDK_DIR / "resources"
+CLIENT_INIT_FILE = SDK_DIR / "__init__.py"
 OPENAPI_DIR = PROJECT_ROOT / "openapi"
 REPO_SPEC_FILE = OPENAPI_DIR / "openapi.json"
 VENDORED_SPEC_FILE = SDK_DIR / "openapi" / "openapi.json"
@@ -56,6 +57,8 @@ ACTION_PREFIXES = (
     "destroy",
     "archive",
     "restore",
+    "extend",
+    "snapshot",
     "download",
     "rotate",
     "validate",
@@ -63,6 +66,8 @@ ACTION_PREFIXES = (
     "reveal",
     "claim",
 )
+
+EMPTY_BODY_ACTIONS = {"archive", "rotate", "validate"}
 
 
 # ---------------------------------------------------------------------------
@@ -155,7 +160,7 @@ def parse_spec(spec: dict) -> list[Resource]:
                 method=method,
                 operation_id=details.get("operationId", ""),
                 summary=(details.get("summary") or "").strip(),
-                has_body="requestBody" in details,
+                has_body=_expects_body(method, details),
                 path_params=path_params,
                 query_params=query_params,
                 is_list=is_list,
@@ -197,7 +202,22 @@ def _relative_method_name(ep: Endpoint, res: Resource) -> str:
             clean = clean[:-1]
         parts.append(clean)
 
-    return "_".join(parts) if parts else "create"
+    return "_".join(parts) if parts else _operation_core(ep, res) or "create"
+
+
+def _expects_body(method: str, details: dict) -> bool:
+    if "requestBody" in details:
+        return True
+    if method not in {"post", "patch", "put"}:
+        return False
+
+    operation_id = details.get("operationId", "")
+    core = operation_id
+    suffix = f"_{method}"
+    if core.endswith(suffix):
+        core = core[: -len(suffix)]
+    actions = set(core.split("_"))
+    return not bool(actions & EMPTY_BODY_ACTIONS)
 
 
 def _singularize(value: str) -> str:
@@ -272,6 +292,10 @@ def _build_action_method_name(action: str, raw_entity: str, singular_entity: str
         return "archive" if not multi_entity else f"archive_{singular_entity or raw_entity or 'item'}"
     if action == "restore":
         return "restore" if not multi_entity else f"restore_{singular_entity or raw_entity or 'item'}"
+    if action == "extend":
+        return "extend" if not multi_entity else f"extend_{singular_entity or raw_entity or 'item'}"
+    if action == "snapshot":
+        return "snapshot" if not multi_entity else f"snapshot_{singular_entity or raw_entity or 'item'}"
     if action == "download":
         return "download" if not multi_entity else f"download_{singular_entity or raw_entity or 'item'}"
     if action == "claim":
@@ -285,6 +309,38 @@ def _build_action_method_name(action: str, raw_entity: str, singular_entity: str
     if action == "reveal":
         return "reveal" if not raw_entity and not multi_entity else f"reveal_{singular_entity or raw_entity or 'item'}"
     return f"{action}_{singular_entity or raw_entity or 'item'}"
+
+
+def _http_action_name(method: str) -> str:
+    if method == "delete":
+        return "delete"
+    if method == "patch":
+        return "update"
+    if method == "put":
+        return "replace"
+    if method == "post":
+        return "create"
+    return "retrieve"
+
+
+def _unique_method_name(name: str, ep: Endpoint, res: Resource, used_names: set[str]) -> str:
+    if name not in used_names:
+        return name
+
+    core = _operation_core(ep, res).replace("-", "_")
+    action = _http_action_name(ep.method)
+    candidates = [
+        f"{action}_{core}" if core else action,
+        f"{core}_{action}" if core else action,
+    ]
+    for candidate in candidates:
+        if candidate not in used_names:
+            return candidate
+
+    index = 2
+    while f"{name}_{index}" in used_names:
+        index += 1
+    return f"{name}_{index}"
 
 
 def _method_name(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[str]:
@@ -373,6 +429,7 @@ def _gen_method(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[s
     name = _method_name(ep, res, used_names)
     if not name:
         return None
+    name = _unique_method_name(name, ep, res, used_names)
     used_names.add(name)
 
     # Signature
@@ -507,6 +564,106 @@ def generate_init(resources: list[Resource]) -> str:
     return '"""SDK resource classes (auto-generated + hand-written)."""\n\n' + "\n".join(sorted(imports)) + "\n\n__all__ = [\n" + "\n".join(f'    "{n}",' for n in sorted(names)) + "\n]\n"
 
 
+def generate_client_init(resources: list[Resource]) -> str:
+    ordered = sorted(resources, key=lambda r: r.module_name)
+    imports = "\n".join(f"from .resources.{r.module_name} import {r.class_name}" for r in ordered)
+    resource_map = "\n".join(f'    "{r.module_name}": {r.class_name},' for r in ordered)
+
+    return f'''"""Layerbrain Python SDK.
+
+Usage (sync)::
+
+    client = Layerbrain(api_key="sk-...")
+    models = client.models.list()
+
+Usage (async)::
+
+    client = Layerbrain(api_key="sk-...")
+    models = await client.models.list()
+"""
+
+from __future__ import annotations
+
+import asyncio
+
+from ._client import AsyncHTTPClient, SyncHTTPClient
+{imports}
+
+
+def _has_running_loop() -> bool:
+    try:
+        asyncio.get_running_loop()
+        return True
+    except RuntimeError:
+        return False
+
+
+_RESOURCE_CLASSES = {{
+{resource_map}
+}}
+
+
+class Layerbrain:
+    """Layerbrain API client.
+
+    Resource methods return values directly in normal scripts and return
+    awaitable coroutines when called inside an active event loop.
+    """
+
+    def __init__(
+        self,
+        api_key: str | None = None,
+        *,
+        base_url: str | None = None,
+        timeout: float = 30.0,
+    ) -> None:
+        self._async_mode = _has_running_loop()
+
+        if self._async_mode:
+            self._client = AsyncHTTPClient(api_key=api_key, base_url=base_url, timeout=timeout)
+        else:
+            self._client = SyncHTTPClient(api_key=api_key, base_url=base_url, timeout=timeout)
+
+        for name, cls in _RESOURCE_CLASSES.items():
+            setattr(self, name, cls(self._client))
+
+    def close(self) -> None:
+        if not self._async_mode:
+            self._client.close()
+
+    def __enter__(self) -> Layerbrain:
+        return self
+
+    def __exit__(self, *args) -> None:
+        self.close()
+
+    async def aclose(self) -> None:
+        if self._async_mode:
+            await self._client.close()
+
+    async def __aenter__(self) -> Layerbrain:
+        return self
+
+    async def __aexit__(self, *args) -> None:
+        await self.aclose()
+
+
+__all__ = [
+    "Layerbrain",
+]
+'''
+
+
+def remove_stale_generated_resources(resources: list[Resource], preserved_modules: set[str]) -> None:
+    current_modules = {r.module_name for r in resources} | preserved_modules
+    for path in RESOURCES_DIR.glob("*.py"):
+        if path.name == "__init__.py":
+            continue
+        if path.stem not in current_modules:
+            path.unlink()
+            print(f"  removed stale {path.name}")
+
+
 def write_spec_files(spec: dict) -> None:
     serialized = json.dumps(spec, indent=2) + "\n"
     OPENAPI_DIR.mkdir(parents=True, exist_ok=True)
@@ -529,7 +686,6 @@ def main():
 
     if args.spec:
         spec = json.loads(Path(args.spec).read_text())
-        write_spec_files(spec)
     else:
         spec = json.loads(REPO_SPEC_FILE.read_text())
 
@@ -559,6 +715,8 @@ def main():
         print("  layerbrain-python/layerbrain/sdk/resources/__init__.py")
         return
 
+    write_spec_files(spec)
+
     gen_resources = [r for r in resources if r.module_name not in PRESERVED_MODULES]
 
     for r in gen_resources:
@@ -571,6 +729,11 @@ def main():
     init_path = RESOURCES_DIR / "__init__.py"
     init_path.write_text(generate_init(all_resources))
     print(f"  __init__.py")
+
+    CLIENT_INIT_FILE.write_text(generate_client_init(all_resources))
+    print(f"  sdk/__init__.py")
+
+    remove_stale_generated_resources(all_resources, PRESERVED_MODULES)
 
     preserved_names = ", ".join(sorted(PRESERVED_MODULES))
     print(f"\nDone. {len(gen_resources)} resources generated, {preserved_names} preserved.")

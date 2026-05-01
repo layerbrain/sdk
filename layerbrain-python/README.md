@@ -66,12 +66,12 @@ import asyncio
 from layerbrain import Layerbrain
 
 async def main():
-    async with Layerbrain() as client:
-        response = await client.chat.completions.create(
-            model="meta-llama/llama-3.1-8b",
-            messages=[{"role": "user", "content": "Hello!"}],
-        )
-        print(response.choices[0].message.content)
+    client = Layerbrain()
+    response = await client.chat.completions.create(
+        model="meta-llama/llama-3.1-8b",
+        messages=[{"role": "user", "content": "Hello!"}],
+    )
+    print(response.choices[0].message.content)
 
 asyncio.run(main())
 ```

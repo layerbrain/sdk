@@ -8,7 +8,7 @@ from .._resource import Resource
 class ThreeD(Resource):
     """3D API resource (auto-generated)."""
 
-    async def create(self, **kwargs: Any) -> dict:
+    async def generations(self, **kwargs: Any) -> dict:
         """Post create_generation"""
         return await self._post("/3d/generations", json=kwargs)
 

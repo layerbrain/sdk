@@ -13,11 +13,12 @@ describe('smoke', () => {
     expect('auth' in client).toBe(false);
     expect('engrams' in client).toBe(false);
     expect('environments' in client).toBe(false);
-    expect(client.networks).toBeTruthy();
-    expect(client.networkRules).toBeTruthy();
-    expect(client.networkFlows).toBeTruthy();
+    expect('tools' in client).toBe(false);
+    expect(client.events).toBeTruthy();
+    expect(client.exports).toBeTruthy();
+    expect(client.plans).toBeTruthy();
     expect(client.storage).toBeTruthy();
-    expect(client.snapshots).toBeTruthy();
     expect(client.webhooks).toBeTruthy();
+    expect(client.work).toBeTruthy();
   });
 });

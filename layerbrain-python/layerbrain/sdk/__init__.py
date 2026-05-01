@@ -2,13 +2,13 @@
 
 Usage (sync)::
 
-    with Layerbrain(api_key="sk-...") as client:
-        machines = client.machines.list()
+    client = Layerbrain(api_key="sk-...")
+    models = client.models.list()
 
 Usage (async)::
 
-    async with Layerbrain(api_key="sk-...") as client:
-        machines = await client.machines.list()
+    client = Layerbrain(api_key="sk-...")
+    models = await client.models.list()
 """
 
 from __future__ import annotations
@@ -23,23 +23,23 @@ from .resources.brains import Brains
 from .resources.chat import Chat
 from .resources.compute import Compute
 from .resources.embeddings import Embeddings
+from .resources.events import Events
+from .resources.exports import Exports
 from .resources.images import Images
 from .resources.machines import Machines
 from .resources.memberships import Memberships
 from .resources.models import Models
-from .resources.network_flows import NetworkFlows
-from .resources.network_rules import NetworkRules
-from .resources.networks import Networks
 from .resources.organizations import Organizations
+from .resources.plans import Plans
 from .resources.secrets import Secrets
 from .resources.snapshots import Snapshots
 from .resources.statements import Statements
 from .resources.storage import Storage
 from .resources.subscriptions import Subscriptions
 from .resources.threed import ThreeD
-from .resources.tools import Tools
 from .resources.videos import Videos
 from .resources.webhooks import Webhooks
+from .resources.work import Work
 
 
 def _has_running_loop() -> bool:
@@ -55,41 +55,34 @@ _RESOURCE_CLASSES = {
     "api_keys": APIKeys,
     "audio": Audio,
     "brains": Brains,
+    "chat": Chat,
     "compute": Compute,
     "embeddings": Embeddings,
+    "events": Events,
+    "exports": Exports,
     "images": Images,
     "machines": Machines,
     "memberships": Memberships,
     "models": Models,
-    "network_flows": NetworkFlows,
-    "network_rules": NetworkRules,
-    "networks": Networks,
     "organizations": Organizations,
+    "plans": Plans,
     "secrets": Secrets,
     "snapshots": Snapshots,
-    "subscriptions": Subscriptions,
     "statements": Statements,
     "storage": Storage,
+    "subscriptions": Subscriptions,
     "threed": ThreeD,
-    "tools": Tools,
     "videos": Videos,
     "webhooks": Webhooks,
+    "work": Work,
 }
 
 
 class Layerbrain:
     """Layerbrain API client.
 
-    Auto-detects whether it's created inside a running event loop.
-    If yes: async mode -- resource methods return coroutines (use ``await``).
-    If no: sync mode -- resource methods return values directly.
-
-    Args:
-        api_key: API key. Falls back to LAYERBRAIN_API_KEY env var
-            or ~/.layerbrain/credentials.toml.
-        base_url: API base URL. Falls back to LAYERBRAIN_BASE_URL
-            or https://api.layerbrain.com.
-        timeout: HTTP request timeout in seconds.
+    Resource methods return values directly in normal scripts and return
+    awaitable coroutines when called inside an active event loop.
     """
 
     def __init__(
@@ -106,12 +99,8 @@ class Layerbrain:
         else:
             self._client = SyncHTTPClient(api_key=api_key, base_url=base_url, timeout=timeout)
 
-        self.chat = Chat(self._client)
-
         for name, cls in _RESOURCE_CLASSES.items():
             setattr(self, name, cls(self._client))
-
-    # -- sync context manager --
 
     def close(self) -> None:
         if not self._async_mode:
@@ -122,8 +111,6 @@ class Layerbrain:
 
     def __exit__(self, *args) -> None:
         self.close()
-
-    # -- async context manager --
 
     async def aclose(self) -> None:
         if self._async_mode:

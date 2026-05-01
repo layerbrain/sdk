@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 from .._resource import Resource
 from .._pagination import SyncPage
@@ -9,22 +9,14 @@ from .._pagination import SyncPage
 class Compute(Resource):
     """Compute API resource (auto-generated)."""
 
-    async def list(
-        self,
-        page: Optional[int] = 1,
-        page_size: Optional[int] = 10,
-        ordering: Optional[str] = None,
-    ) -> SyncPage:
-        """Get list_compute"""
+    async def delete(self) -> dict:
+        """Delete compute_disabled"""
+        return await self._delete("/compute")
+
+    async def list(self) -> SyncPage:
+        """Get compute_disabled"""
         request_path = "/compute"
-        params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if page_size is not None:
-            params["page_size"] = page_size
-        if ordering is not None:
-            params["ordering"] = ordering
-        data = await self._get(request_path, params=params or None)
+        data = await self._get(request_path, params=None)
         return SyncPage(
             data=data.get("data", []),
             has_more=data.get("has_more", False),
@@ -32,6 +24,22 @@ class Compute(Resource):
             path=request_path,
         )
 
-    async def retrieve(self, id: str) -> dict:
-        """Get retrieve_compute"""
-        return await self._get(f"/compute/{id}", params=None)
+    async def create(self, **kwargs: Any) -> dict:
+        """Post compute_disabled"""
+        return await self._post("/compute", json=kwargs)
+
+    async def compute_path_disabled(self, path: str) -> dict:
+        """Delete compute_path_disabled"""
+        return await self._delete(f"/compute/{path}")
+
+    async def retrieve(self, path: str) -> dict:
+        """Get compute_path_disabled"""
+        return await self._get(f"/compute/{path}", params=None)
+
+    async def update(self, path: str, **kwargs: Any) -> dict:
+        """Patch compute_path_disabled"""
+        return await self._patch(f"/compute/{path}", json=kwargs)
+
+    async def create_compute_path_disabled(self, path: str, **kwargs: Any) -> dict:
+        """Post compute_path_disabled"""
+        return await self._post(f"/compute/{path}", json=kwargs)

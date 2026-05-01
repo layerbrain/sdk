@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
-from .._pagination import SyncPage
 from .._resource import Resource
+from .._pagination import SyncPage
 
 
 class Subscriptions(Resource):
@@ -11,9 +11,9 @@ class Subscriptions(Resource):
 
     async def list(
         self,
-        page: int | None = 1,
-        page_size: int | None = 10,
-        ordering: str | None = None,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
     ) -> SyncPage:
         """List active subscriptions for the authenticated organization."""
         request_path = "/subscriptions"

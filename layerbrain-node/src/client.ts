@@ -7,23 +7,23 @@ import {
   BrainsResource,
   ComputeResource,
   EmbeddingsResource,
+  EventsResource,
+  ExportsResource,
   ImagesResource,
   MachinesResource,
   MembershipsResource,
   ModelsResource,
-  NetworkFlowsResource,
-  NetworkRulesResource,
-  NetworksResource,
   OrganizationsResource,
+  PlansResource,
   SecretsResource,
   SnapshotsResource,
   StatementsResource,
   StorageResource,
   SubscriptionsResource,
   ThreeDResource,
-  ToolsResource,
   VideosResource,
   WebhooksResource,
+  WorkResource,
 } from './resources/resources.js';
 
 export interface ClientOptions extends HTTPClientOptions {}
@@ -36,23 +36,23 @@ export class Layerbrain {
   readonly chat: ChatResource;
   readonly compute: ComputeResource;
   readonly embeddings: EmbeddingsResource;
+  readonly events: EventsResource;
+  readonly exports: ExportsResource;
   readonly images: ImagesResource;
   readonly machines: MachinesResource;
   readonly memberships: MembershipsResource;
   readonly models: ModelsResource;
-  readonly networkFlows: NetworkFlowsResource;
-  readonly networkRules: NetworkRulesResource;
-  readonly networks: NetworksResource;
   readonly organizations: OrganizationsResource;
+  readonly plans: PlansResource;
   readonly secrets: SecretsResource;
   readonly snapshots: SnapshotsResource;
   readonly statements: StatementsResource;
   readonly storage: StorageResource;
   readonly subscriptions: SubscriptionsResource;
   readonly threeD: ThreeDResource;
-  readonly tools: ToolsResource;
   readonly videos: VideosResource;
   readonly webhooks: WebhooksResource;
+  readonly work: WorkResource;
 
   private readonly httpClient: HTTPClient;
 
@@ -66,23 +66,23 @@ export class Layerbrain {
     this.chat = new ChatResource(this.httpClient);
     this.compute = new ComputeResource(this.httpClient);
     this.embeddings = new EmbeddingsResource(this.httpClient);
+    this.events = new EventsResource(this.httpClient);
+    this.exports = new ExportsResource(this.httpClient);
     this.images = new ImagesResource(this.httpClient);
     this.machines = new MachinesResource(this.httpClient);
     this.memberships = new MembershipsResource(this.httpClient);
     this.models = new ModelsResource(this.httpClient);
-    this.networkFlows = new NetworkFlowsResource(this.httpClient);
-    this.networkRules = new NetworkRulesResource(this.httpClient);
-    this.networks = new NetworksResource(this.httpClient);
     this.organizations = new OrganizationsResource(this.httpClient);
+    this.plans = new PlansResource(this.httpClient);
     this.secrets = new SecretsResource(this.httpClient);
     this.snapshots = new SnapshotsResource(this.httpClient);
     this.statements = new StatementsResource(this.httpClient);
     this.storage = new StorageResource(this.httpClient);
     this.subscriptions = new SubscriptionsResource(this.httpClient);
     this.threeD = new ThreeDResource(this.httpClient);
-    this.tools = new ToolsResource(this.httpClient);
     this.videos = new VideosResource(this.httpClient);
     this.webhooks = new WebhooksResource(this.httpClient);
+    this.work = new WorkResource(this.httpClient);
   }
 
   get apiKey(): string | undefined {
