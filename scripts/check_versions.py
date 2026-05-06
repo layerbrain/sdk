@@ -36,15 +36,6 @@ def _toml_version(path: Path) -> str:
     raise SystemExit(f"{path.relative_to(ROOT)} has no project.version")
 
 
-def _cli_sdk_dependency() -> str:
-    deps = _toml_project(ROOT / "cli" / "pyproject.toml")["dependencies"]
-    prefix = "layerbrain=="
-    for dep in deps:
-        if dep.startswith(prefix):
-            return dep[len(prefix) :]
-    raise SystemExit("cli/pyproject.toml does not pin layerbrain==<version>")
-
-
 def _node_version(path: Path) -> str:
     return json.loads(path.read_text())["version"]
 
@@ -60,8 +51,6 @@ def _node_runtime_version() -> str:
 def _package_versions() -> dict[str, str]:
     return {
         "python": _python_version(),
-        "cli": _toml_version(ROOT / "cli" / "pyproject.toml"),
-        "cli-sdk": _cli_sdk_dependency(),
         "node": _node_version(ROOT / "layerbrain-node" / "package.json"),
     }
 
@@ -117,7 +106,6 @@ def _check_release_tag(tag: str) -> int:
     release_prefixes = {
         "python-v": "python",
         "node-v": "node",
-        "cli-v": "cli",
     }
     for prefix, package in release_prefixes.items():
         if tag.startswith(prefix):
@@ -133,7 +121,7 @@ def _check_release_tag(tag: str) -> int:
             print(f"{package}={package_version}")
             return 0
     print(
-        "release tag must start with python-v, node-v, or cli-v",
+        "release tag must start with python-v or node-v",
         file=sys.stderr,
     )
     return 1

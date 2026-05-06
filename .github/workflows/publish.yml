@@ -5,27 +5,12 @@ on:
     tags:
       - "python-v*"
       - "node-v*"
-      - "cli-v*"
 
 permissions:
   contents: write
   id-token: write
 
 jobs:
-  cli-github-release:
-    if: startsWith(github.ref_name, 'cli-v')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create or verify GitHub release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "$GITHUB_REF_NAME" \
-            --notes "Layerbrain $GITHUB_REF_NAME" \
-            --verify-tag \
-            || gh release view "$GITHUB_REF_NAME"
-
   python-sdk:
     if: startsWith(github.ref_name, 'python-v')
     runs-on: ubuntu-latest
@@ -82,25 +67,3 @@ jobs:
         working-directory: layerbrain-node
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  cli-artifact:
-    if: startsWith(github.ref_name, 'cli-v')
-    needs: cli-github-release
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-15-intel, macos-15]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Check shared versions
-        run: python scripts/check_versions.py --release-tag "$GITHUB_REF_NAME"
-      - name: Build CLI artifact
-        run: cli/scripts/build-artifact.sh
-      - name: Upload CLI artifact
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload "$GITHUB_REF_NAME" cli/dist/layerbrain-*.tar.gz --clobber
