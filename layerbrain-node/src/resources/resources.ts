@@ -144,7 +144,7 @@ export class MachinesResource extends ResourceBase {
     }
 
     const url = `${wsBaseURL}/v1/machines/${encodeURIComponent(machineId)}/connect`;
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { 'x-layerbrain-source': 'api' };
 
     if (this.client.apiKey) {
       headers.Authorization = `Bearer ${this.client.apiKey}`;
@@ -324,18 +324,6 @@ export class StorageResource extends ResourceBase {
     return this.get(`/storage/buckets/${encodeURIComponent(id)}`);
   }
 
-  deleteBucketKey(id: string): Promise<JsonObject> {
-    return super.delete(`/storage/keys/${encodeURIComponent(id)}`);
-  }
-
-  createBucketKey(id: string, body: JsonObject = {}): Promise<JsonObject> {
-    return this.post(`/storage/buckets/${encodeURIComponent(id)}/keys`, body);
-  }
-
-  listBucketKeys(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource(`/storage/buckets/${encodeURIComponent(id)}/keys`, { page: 1, pageSize: 10, ...params });
-  }
-
   presignBucket(id: string, body: JsonObject = {}): Promise<JsonObject> {
     return this.post(`/storage/buckets/${encodeURIComponent(id)}/presign`, body);
   }
@@ -448,7 +436,7 @@ export class WebhooksResource extends ResourceBase {
       ? options.events.map((event) => event.trim()).filter(Boolean).join(',')
       : options.events?.trim();
     const query = rawEvents ? `?events=${encodeURIComponent(rawEvents)}` : '';
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { 'x-layerbrain-source': 'api' };
 
     if (this.client.apiKey) {
       headers.Authorization = `Bearer ${this.client.apiKey}`;

@@ -91,38 +91,6 @@ class Storage(Resource):
         """Patch patch_bucket"""
         return await self._patch(f"/storage/buckets/{id}", json=kwargs)
 
-    async def list_bucket_keys(
-        self,
-        id: str,
-        page: Optional[int] = 1,
-        page_size: Optional[int] = 10,
-        ordering: Optional[str] = None,
-    ) -> SyncPage:
-        """Get list_bucket_keys"""
-        request_path = f"/storage/buckets/{id}/keys"
-        params: dict[str, Any] = {}
-        if page is not None:
-            params["page"] = page
-        if page_size is not None:
-            params["page_size"] = page_size
-        if ordering is not None:
-            params["ordering"] = ordering
-        data = await self._get(request_path, params=params or None)
-        return SyncPage(
-            data=data.get("data", []),
-            has_more=data.get("has_more", False),
-            client=self._client,
-            path=request_path,
-        )
-
-    async def create_bucket_key(self, id: str, **kwargs: Any) -> dict:
-        """Post create_bucket_key"""
-        return await self._post(f"/storage/buckets/{id}/keys", json=kwargs)
-
     async def presign_bucket(self, id: str, **kwargs: Any) -> dict:
         """Post presign_bucket"""
         return await self._post(f"/storage/buckets/{id}/presign", json=kwargs)
-
-    async def delete_bucket_key(self, id: str) -> dict:
-        """Delete delete_bucket_key"""
-        return await self._delete(f"/storage/keys/{id}")
