@@ -123,9 +123,6 @@ const OPERATION_DEFINITIONS = {
   'storage_delete_bucket_delete': { resource: 'storage', method: 'deleteBucket', kind: 'delete' },
   'storage_patch_bucket_patch': { resource: 'storage', method: 'updateBucket', kind: 'patch' },
   'storage_retrieve_bucket_get': { resource: 'storage', method: 'retrieveBucket', kind: 'get' },
-  'storage_delete_bucket_key_delete': { resource: 'storage', method: 'deleteBucketKey', kind: 'delete' },
-  'storage_create_bucket_key_post': { resource: 'storage', method: 'createBucketKey', kind: 'post' },
-  'storage_list_bucket_keys_get': { resource: 'storage', method: 'listBucketKeys', kind: 'list' },
   'storage_presign_bucket_post': { resource: 'storage', method: 'presignBucket', kind: 'post' },
   'storage_validate_backend_post': { resource: 'storage', method: 'validateBackend', kind: 'post', emptyBody: true },
 
@@ -287,7 +284,7 @@ function customMachinesMethods() {
     }
 
     const url = \`\${wsBaseURL}/v1/machines/\${encodeURIComponent(machineId)}/connect\`;
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { 'x-layerbrain-source': 'api' };
 
     if (this.client.apiKey) {
       headers.Authorization = \`Bearer \${this.client.apiKey}\`;
@@ -315,7 +312,7 @@ function customWebhooksMethods() {
       ? options.events.map((event) => event.trim()).filter(Boolean).join(',')
       : options.events?.trim();
     const query = rawEvents ? \`?events=\${encodeURIComponent(rawEvents)}\` : '';
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = { 'x-layerbrain-source': 'api' };
 
     if (this.client.apiKey) {
       headers.Authorization = \`Bearer \${this.client.apiKey}\`;

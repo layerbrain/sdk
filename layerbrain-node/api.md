@@ -138,9 +138,6 @@
 - `client.storage.deleteBucket(id)`
 - `client.storage.updateBucket(id, body?)`
 - `client.storage.retrieveBucket(id)`
-- `client.storage.deleteBucketKey(id)`
-- `client.storage.createBucketKey(id, body?)`
-- `client.storage.listBucketKeys(id, params?)`
 - `client.storage.presignBucket(id, body?)`
 - `client.storage.validateBackend(id)`
 
