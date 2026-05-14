@@ -17,6 +17,7 @@ export const RESOURCE_DEFINITIONS = {
   events: { className: 'EventsResource', property: 'events', title: 'Events' },
   exports: { className: 'ExportsResource', property: 'exports', title: 'Exports' },
   images: { className: 'ImagesResource', property: 'images', title: 'Images' },
+  logs: { className: 'LogsResource', property: 'logs', title: 'Logs' },
   machines: { className: 'MachinesResource', property: 'machines', title: 'Machines' },
   memberships: { className: 'MembershipsResource', property: 'memberships', title: 'Memberships' },
   models: { className: 'ModelsResource', property: 'models', title: 'Models' },
@@ -61,6 +62,7 @@ const OPERATION_DEFINITIONS = {
   'compute_retrieve_compute_availability_get': { resource: 'compute', method: 'availability', kind: 'query' },
   'embeddings_create_embedding_post': { resource: 'embeddings', method: 'create', kind: 'post' },
 
+  'events_create_post': { resource: 'events', method: 'create', kind: 'post' },
   'events_list_get': { resource: 'events', method: 'list', kind: 'list' },
   'events_types_get': { resource: 'events', method: 'types', kind: 'get' },
   'events_retrieve_get': { resource: 'events', method: 'retrieve', kind: 'get' },
@@ -72,10 +74,14 @@ const OPERATION_DEFINITIONS = {
   'images_create_edit_post': { resource: 'images', method: 'edit', kind: 'post' },
   'images_create_generation_post': { resource: 'images', method: 'generate', kind: 'post' },
 
+  'logs_list_get': { resource: 'logs', method: 'list', kind: 'list' },
+  'logs_retrieve_get': { resource: 'logs', method: 'retrieve', kind: 'get' },
+
   'machines_create_machine_post': { resource: 'machines', method: 'create', kind: 'post', machineCreate: true },
   'machines_list_machines_get': { resource: 'machines', method: 'list', kind: 'list' },
   'machines_delete_machine_delete': { resource: 'machines', method: 'delete', kind: 'delete' },
   'machines_retrieve_machine_get': { resource: 'machines', method: 'retrieve', kind: 'get' },
+  'machines_socket_websocket': { resource: 'machines', method: 'createConnection', kind: 'custom' },
   'machines_connect_websocket': { resource: 'machines', method: 'connect', kind: 'custom' },
   'machines_extend_machine_post': { resource: 'machines', method: 'extend', kind: 'post' },
   'machines_restore_machine_post': { resource: 'machines', method: 'restore', kind: 'post' },
@@ -140,6 +146,10 @@ const OPERATION_DEFINITIONS = {
   'buckets_delete_bucket_object_post': { resource: 'storage', method: 'deleteBucketObject', kind: 'post' },
   'buckets_head_bucket_object_get': { resource: 'storage', method: 'headBucketObject', kind: 'query' },
   'buckets_move_bucket_object_post': { resource: 'storage', method: 'moveBucketObject', kind: 'post' },
+  'buckets_create_bucket_credential_post': { resource: 'storage', method: 'createBucketCredential', kind: 'post' },
+  'buckets_list_bucket_credentials_get': { resource: 'storage', method: 'listBucketCredentials', kind: 'list' },
+  'buckets_delete_bucket_credential_delete': { resource: 'storage', method: 'deleteBucketCredential', kind: 'delete' },
+  'buckets_update_bucket_credential_patch': { resource: 'storage', method: 'updateBucketCredential', kind: 'patch' },
 
   'subscriptions_create_post': { resource: 'subscriptions', method: 'create', kind: 'post' },
   'subscriptions_list_get': { resource: 'subscriptions', method: 'list', kind: 'list' },
@@ -421,7 +431,7 @@ function generateOperation(operation) {
 }
 
 function customMachinesMethods() {
-  return `  async connect(machineId: string): Promise<MachineConnection> {
+  return `  private websocketURL(path: string): string {
     const baseURL = this.client.baseURL;
     let wsBaseURL: string;
 
@@ -433,15 +443,64 @@ function customMachinesMethods() {
       wsBaseURL = \`wss://\${baseURL}\`;
     }
 
-    const url = \`\${wsBaseURL}/v1/machines/\${encodeURIComponent(machineId)}/connect\`;
-    const headers: Record<string, string> = { 'x-layerbrain-source': 'api' };
+    return \`\${wsBaseURL}/v1\${path}\`;
+  }
 
-    if (this.client.apiKey) {
-      headers.Authorization = \`Bearer \${this.client.apiKey}\`;
+  private websocketHeaders(): Record<string, string> {
+    if (!this.client.apiKey) {
+      throw new Error('No API key provided. Set LAYERBRAIN_API_KEY or pass apiKey to the client.');
     }
 
-    const transport = await MachineTransport.connect(url, headers);
+    return {
+      Authorization: \`Bearer \${this.client.apiKey}\`,
+      'x-layerbrain-source': 'api',
+    };
+  }
+
+  async connect(machineId: string): Promise<MachineConnection> {
+    const url = this.websocketURL(\`/machines/\${encodeURIComponent(machineId)}\`);
+    const transport = await MachineTransport.connect(url, this.websocketHeaders());
     return new MachineConnection(machineId, transport);
+  }
+
+  async createConnection(body: JsonObject = {}): Promise<MachineConnection> {
+    const transport = await MachineTransport.connect(
+      this.websocketURL('/machines'),
+      this.websocketHeaders(),
+    );
+    try {
+      const machine = await transport.send('machine.create', {
+        body,
+        timeout: 30_000,
+      }) as JsonObject;
+      const machineId = typeof machine.id === 'string' ? machine.id : '';
+      if (!machineId) {
+        await transport.close();
+        throw new Error('Machine create response did not include an id.');
+      }
+      return new MachineConnection(machineId, transport);
+    } catch (error) {
+      await transport.close();
+      throw error;
+    }
+  }
+
+  async run(body: JsonObject = {}, params: JsonObject = {}): Promise<JsonObject> {
+    const transport = await MachineTransport.connect(
+      this.websocketURL('/machines'),
+      this.websocketHeaders(),
+    );
+    try {
+      return (await transport.send('machine.run', {
+        body: {
+          ...body,
+          command: params,
+        },
+        timeout: 30_000,
+      }) as JsonObject) ?? {};
+    } finally {
+      await transport.close();
+    }
   }`;
 }
 

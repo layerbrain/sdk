@@ -62,6 +62,10 @@ export class ExportsResource extends ResourceBase {
 }
 
 export class EventsResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/events', body);
+  }
+
   list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
     return this.listResource('/events', { page: 1, pageSize: 10, ...params });
   }
@@ -169,6 +173,16 @@ export class MachinesResource extends ResourceBase {
   }
 }
 
+export class LogsResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/logs', { page: 1, pageSize: 10, ...params });
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(`/logs/${encodeURIComponent(id)}`);
+  }
+}
+
 export class MembershipsResource extends ResourceBase {
   create(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/memberships', body);
@@ -219,12 +233,6 @@ export class OrganizationsResource extends ResourceBase {
   }
 }
 
-export class ResourcesResource extends ResourceBase {
-  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
-    return this.listResource('/resources', { page: 1, pageSize: 10, ...params });
-  }
-}
-
 export class SecretsResource extends ResourceBase {
   create(body: JsonObject = {}): Promise<JsonObject> {
     return this.post('/secrets', body);
@@ -252,14 +260,8 @@ export class SecretsResource extends ResourceBase {
 }
 
 export class StatementsResource extends ResourceBase {
-  async list(params: ListParams & { organization?: string } = {}): Promise<ListPage<JsonObject>> {
-    const merged = { page: 1, pageSize: 10, ...params };
-    const query = this.listQuery(merged) ?? {};
-    if (merged.organization !== undefined) {
-      query.organization = merged.organization;
-    }
-    const response = await this.get('/statements', query);
-    return this.toListPage('/statements', response, merged);
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/statements', { page: 1, pageSize: 10, ...params });
   }
 
   retrieve(statementId: string): Promise<JsonObject> {
@@ -389,6 +391,14 @@ export class StorageResource extends ResourceBase {
     return this.get(`/buckets/${encodeURIComponent(id)}`);
   }
 
+  createBucketCredential(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(`/buckets/${encodeURIComponent(id)}/credentials`, body);
+  }
+
+  listBucketCredentials(id: string, params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource(`/buckets/${encodeURIComponent(id)}/credentials`, { page: 1, pageSize: 10, ...params });
+  }
+
   createBucketFolder(id: string, body: JsonObject = {}): Promise<JsonObject> {
     return this.post(`/buckets/${encodeURIComponent(id)}/folders`, body);
   }
@@ -415,6 +425,14 @@ export class StorageResource extends ResourceBase {
 
   moveBucketObject(id: string, body: JsonObject = {}): Promise<JsonObject> {
     return this.post(`/buckets/${encodeURIComponent(id)}/objects/move`, body);
+  }
+
+  deleteBucketCredential(id: string, accessKeyId: string): Promise<JsonObject> {
+    return super.delete(`/buckets/${encodeURIComponent(id)}/credentials/${encodeURIComponent(accessKeyId)}`);
+  }
+
+  updateBucketCredential(id: string, accessKeyId: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(`/buckets/${encodeURIComponent(id)}/credentials/${encodeURIComponent(accessKeyId)}`, body);
   }
 }
 

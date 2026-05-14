@@ -9,6 +9,7 @@ import {
   EventsResource,
   ExportsResource,
   ImagesResource,
+  LogsResource,
   MachinesResource,
   MembershipsResource,
   ModelsResource,
@@ -16,7 +17,6 @@ import {
   NetworkRulesResource,
   NetworksResource,
   OrganizationsResource,
-  ResourcesResource,
   SecretsResource,
   SnapshotsResource,
   StatementsResource,
@@ -40,6 +40,7 @@ export class Layerbrain {
   readonly events: EventsResource;
   readonly exports: ExportsResource;
   readonly images: ImagesResource;
+  readonly logs: LogsResource;
   readonly machines: MachinesResource;
   readonly memberships: MembershipsResource;
   readonly models: ModelsResource;
@@ -47,7 +48,6 @@ export class Layerbrain {
   readonly networkRules: NetworkRulesResource;
   readonly networks: NetworksResource;
   readonly organizations: OrganizationsResource;
-  readonly resources: ResourcesResource;
   readonly secrets: SecretsResource;
   readonly snapshots: SnapshotsResource;
   readonly statements: StatementsResource;
@@ -72,6 +72,7 @@ export class Layerbrain {
     this.events = new EventsResource(this.httpClient);
     this.exports = new ExportsResource(this.httpClient);
     this.images = new ImagesResource(this.httpClient);
+    this.logs = new LogsResource(this.httpClient);
     this.machines = new MachinesResource(this.httpClient);
     this.memberships = new MembershipsResource(this.httpClient);
     this.models = new ModelsResource(this.httpClient);
@@ -79,7 +80,6 @@ export class Layerbrain {
     this.networkRules = new NetworkRulesResource(this.httpClient);
     this.networks = new NetworksResource(this.httpClient);
     this.organizations = new OrganizationsResource(this.httpClient);
-    this.resources = new ResourcesResource(this.httpClient);
     this.secrets = new SecretsResource(this.httpClient);
     this.snapshots = new SnapshotsResource(this.httpClient);
     this.statements = new StatementsResource(this.httpClient);

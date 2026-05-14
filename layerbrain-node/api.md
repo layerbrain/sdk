@@ -26,6 +26,7 @@
 
 ## Events
 
+- `client.events.create(body?)`
 - `client.events.list(params?)`
 - `client.events.types()`
 - `client.events.retrieve(id)`
@@ -36,10 +37,16 @@
 - `client.exports.list(params?)`
 - `client.exports.download(id)`
 
+## Logs
+
+- `client.logs.list(params?)`
+- `client.logs.retrieve(id)`
+
 ## Machines
 
 - `client.machines.create(body?)`
 - `client.machines.list(params?)`
+- `client.machines.createConnection()`
 - `client.machines.delete(id)`
 - `client.machines.retrieve(id)`
 - `client.machines.connect(id)`
@@ -60,10 +67,6 @@
 - `client.organizations.delete(id)`
 - `client.organizations.retrieve(id)`
 - `client.organizations.update(id, body?)`
-
-## Resources
-
-- `client.resources.list(params?)`
 
 ## Secrets
 
@@ -87,6 +90,8 @@
 - `client.storage.deleteBucket(id)`
 - `client.storage.updateBucket(id, body?)`
 - `client.storage.retrieveBucket(id)`
+- `client.storage.createBucketCredential(id, body?)`
+- `client.storage.listBucketCredentials(id, params?)`
 - `client.storage.createBucketFolder(id, body?)`
 - `client.storage.listBucketObjects(id)`
 - `client.storage.presignBucket(id, body?)`
@@ -94,6 +99,8 @@
 - `client.storage.deleteBucketObject(id, body?)`
 - `client.storage.headBucketObject(id)`
 - `client.storage.moveBucketObject(id, body?)`
+- `client.storage.deleteBucketCredential(id, accessKeyId)`
+- `client.storage.updateBucketCredential(id, accessKeyId, body?)`
 
 ## Subscriptions
 
