@@ -46,6 +46,7 @@ class TestWebhooks(unittest.IsolatedAsyncioTestCase):
             "wss://api.layerbrain.test/v1/webhooks?events=queue.created%2Cqueue.updated",
         )
         self.assertEqual(headers["Authorization"], "Bearer sk_test")
+        self.assertEqual(headers["x-layerbrain-source"], "api")
 
 
 class TestPublicSDKSurface(unittest.TestCase):

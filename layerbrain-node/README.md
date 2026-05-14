@@ -55,7 +55,7 @@ import { Layerbrain } from 'layerbrain';
 const client = new Layerbrain({
   apiKey: process.env.LAYERBRAIN_API_KEY,
 });
-const conn = await client.machines.connect('mach_abc123');
+const conn = await client.machines.connect('mch_abc123');
 
 const result = await conn.shell.execute('ls -la ~/brain');
 console.log(result.stdout);
@@ -78,7 +78,13 @@ const client = new Layerbrain({
 });
 
 try {
-  await client.machines.create({ compute: 'na-us-ca-sfo_s.small' });
+  await client.machines.create({
+    cpu: 1,
+    ram: 1,
+    disk_gb: 10,
+    region: 'na-us-ca-sfo',
+    ttl_minutes: 30,
+  });
 } catch (error) {
   if (error instanceof AuthenticationError) {
     console.error('Invalid API key');

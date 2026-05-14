@@ -347,9 +347,9 @@ class TestMachineConnection(unittest.IsolatedAsyncioTestCase):
     async def test_context_manager_closes(self):
         ws = FakeWebSocket()
         transport = WebSocketTransport(ws)
-        conn = MachineConnection("mach_test", transport)
+        conn = MachineConnection("mch_test", transport)
 
-        self.assertEqual(conn.id, "mach_test")
+        self.assertEqual(conn.id, "mch_test")
         self.assertIsInstance(conn.shell, MachineShell)
         self.assertIsInstance(conn.filesystem, MachineFilesystem)
 
@@ -361,7 +361,7 @@ class TestMachineConnection(unittest.IsolatedAsyncioTestCase):
     async def test_has_shell_and_filesystem(self):
         ws = FakeWebSocket()
         transport = WebSocketTransport(ws)
-        conn = MachineConnection("mach_test", transport)
+        conn = MachineConnection("mch_test", transport)
 
         self.assertIsNotNone(conn.shell)
         self.assertIsNotNone(conn.filesystem)
@@ -383,17 +383,21 @@ class TestMachinesConnectMethod(unittest.IsolatedAsyncioTestCase):
         machines = Machines.__new__(Machines)
         machines._client = mock_client
 
-        conn = await Machines.connect.__wrapped__(machines, "mach_123")
+        conn = await Machines.connect.__wrapped__(machines, "mch_123")
 
         mock_ws_module.connect.assert_called_once()
         call_args = mock_ws_module.connect.call_args
         self.assertEqual(
             call_args[0][0],
-            "wss://api.layerbrain.com/v1/machines/mach_123",
+            "wss://api.layerbrain.com/v1/machines/mch_123",
         )
         self.assertEqual(
             call_args[1]["additional_headers"]["Authorization"],
             "Bearer sk-test",
+        )
+        self.assertEqual(
+            call_args[1]["additional_headers"]["x-layerbrain-source"],
+            "api",
         )
 
         await conn.close()
@@ -411,12 +415,12 @@ class TestMachinesConnectMethod(unittest.IsolatedAsyncioTestCase):
         machines = Machines.__new__(Machines)
         machines._client = mock_client
 
-        conn = await Machines.connect.__wrapped__(machines, "mach_local")
+        conn = await Machines.connect.__wrapped__(machines, "mch_local")
 
         call_args = mock_ws_module.connect.call_args
         self.assertEqual(
             call_args[0][0],
-            "ws://localhost:8000/v1/machines/mach_local",
+            "ws://localhost:8000/v1/machines/mch_local",
         )
 
         await conn.close()

@@ -41,6 +41,7 @@ describe('http client', () => {
 
     await expect(client.get('/models')).rejects.toBeInstanceOf(InternalServerError);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][1]?.headers).toMatchObject({ 'x-layerbrain-source': 'api' });
   });
 
   it('retries when maxRetries is configured', async () => {

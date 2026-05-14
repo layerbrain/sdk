@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Optional
 
-from .._pagination import SyncPage
 from .._resource import Resource
+from .._pagination import SyncPage
 
 
 class Subscriptions(Resource):
@@ -11,11 +11,11 @@ class Subscriptions(Resource):
 
     async def list(
         self,
-        page: int | None = 1,
-        page_size: int | None = 10,
-        ordering: str | None = None,
+        page: Optional[int] = 1,
+        page_size: Optional[int] = 10,
+        ordering: Optional[str] = None,
     ) -> SyncPage:
-        """List active subscriptions for the authenticated organization."""
+        """List active subscriptions"""
         request_path = "/subscriptions"
         params: dict[str, Any] = {}
         if page is not None:
@@ -33,9 +33,25 @@ class Subscriptions(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Create a hosted checkout intent for a subscription tier."""
+        """Create a subscription checkout"""
         return await self._post("/subscriptions", json=kwargs)
 
+    async def balance(self, **kwargs: Any) -> dict:
+        """Create a balance top-up checkout"""
+        return await self._post("/subscriptions/balance", json=kwargs)
+
+    async def downgrade(self, **kwargs: Any) -> dict:
+        """Downgrade subscription tier"""
+        return await self._post("/subscriptions/downgrade", json=kwargs)
+
+    async def portal(self) -> dict:
+        """Create a billing portal session"""
+        return await self._post("/subscriptions/portal", json={})
+
+    async def upgrade(self, **kwargs: Any) -> dict:
+        """Upgrade subscription tier"""
+        return await self._post("/subscriptions/upgrade", json=kwargs)
+
     async def retrieve(self, subscription_id: str) -> dict:
-        """Retrieve a subscription by ID."""
+        """Retrieve a subscription"""
         return await self._get(f"/subscriptions/{subscription_id}", params=None)

@@ -15,7 +15,7 @@ class Memberships(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """List memberships based on query parameters:"""
+        """List organization memberships"""
         request_path = "/memberships"
         params: dict[str, Any] = {}
         if page is not None:
@@ -33,9 +33,17 @@ class Memberships(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Create memberships or membership invites."""
+        """Invite organization members"""
         return await self._post("/memberships", json=kwargs)
 
+    async def delete(self, id: str) -> dict:
+        """Remove a membership"""
+        return await self._delete(f"/memberships/{id}")
+
     async def retrieve(self, id: str) -> dict:
-        """Retrieve a single membership."""
+        """Retrieve a membership"""
         return await self._get(f"/memberships/{id}", params=None)
+
+    async def update(self, id: str) -> dict:
+        """Update a membership"""
+        return await self._patch(f"/memberships/{id}", json={})

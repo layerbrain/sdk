@@ -46,6 +46,7 @@ class _BaseClient:
         headers: dict[str, str] = {
             "Content-Type": "application/json",
             "User-Agent": _default_user_agent(),
+            "x-layerbrain-source": "api",
         }
         if self._api_key:
             headers["Authorization"] = f"Bearer {self._api_key}"

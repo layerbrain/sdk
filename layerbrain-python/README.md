@@ -50,13 +50,16 @@ for chunk in stream:
 
 ```python
 machine = client.machines.create(
-    compute="na-us-ca-sfo_s.small",
-    duration_minutes=60,
+    cpu=2,
+    ram=4,
+    disk_gb=40,
+    region="na-us-ca-sfo",
+    ttl_minutes=60,
 )
 print(machine.id, machine.host)
 
-machine = client.machines.retrieve("mach_abc123")
-client.machines.delete("mach_abc123")
+machine = client.machines.retrieve("mch_abc123")
+client.machines.delete("mch_abc123")
 ```
 
 ## Async

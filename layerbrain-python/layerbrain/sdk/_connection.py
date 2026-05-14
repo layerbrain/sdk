@@ -2,7 +2,7 @@
 
 Usage:
     client = Layerbrain()
-    async with client.machines.connect("mach_abc123") as machine:
+    async with client.machines.connect("mch_abc123") as machine:
         # Shell
         result = await machine.shell.execute("ls -la")
         print(result["stdout"])

@@ -4,11 +4,6 @@
 
 - `new Layerbrain(options?)`
 
-## 3D
-
-- `client.threeD.generate(body?)`
-- `client.threeD.retrieve(generationId)`
-
 ## Accounts
 
 - `client.accounts.list(params?)`
@@ -25,76 +20,38 @@
 - `client.apiKeys.retrieve(id)`
 - `client.apiKeys.rotate(id)`
 
-## Audio
-
-- `client.audio.speech(body?)`
-- `client.audio.transcriptions(body?)`
-
-## Brains
-
-- `client.brains.create(body?)`
-- `client.brains.delete(id)`
-- `client.brains.retrieve(id)`
-- `client.brains.archive(id)`
-
-## Chat
-
-- `client.chat.completions.create(params)`
-
 ## Compute
 
-- `client.compute.list(params?)`
-- `client.compute.retrieve(id)`
+- `client.compute.availability()`
 
-## Embeddings
+## Events
 
-- `client.embeddings.create(body?)`
+- `client.events.list(params?)`
+- `client.events.types()`
+- `client.events.retrieve(id)`
 
-## Images
+## Exports
 
-- `client.images.edit(body?)`
-- `client.images.generate(body?)`
+- `client.exports.create(body?)`
+- `client.exports.list(params?)`
+- `client.exports.download(id)`
 
 ## Machines
 
 - `client.machines.create(body?)`
 - `client.machines.list(params?)`
-- `client.machines.delete(machineId)`
-- `client.machines.retrieve(machineId)`
-- `client.machines.connect(machineId)`
-- `client.machines.extend(machineId, body?)`
-- `client.machines.restore(machineId, body?)`
-- `client.machines.snapshot(machineId, body?)`
+- `client.machines.delete(id)`
+- `client.machines.retrieve(id)`
+- `client.machines.connect(id)`
+- `client.machines.extend(id, body?)`
 
 ## Memberships
 
 - `client.memberships.create(body?)`
 - `client.memberships.list(params?)`
+- `client.memberships.delete(id)`
 - `client.memberships.retrieve(id)`
-
-## Models
-
-- `client.models.list(params?)`
-- `client.models.retrieve(modelId)`
-
-## Network Flows
-
-- `client.networkFlows.list(params?)`
-- `client.networkFlows.retrieve(id)`
-
-## Network Rules
-
-- `client.networkRules.create(body?)`
-- `client.networkRules.list(params?)`
-- `client.networkRules.delete(id)`
-- `client.networkRules.update(id, body?)`
-- `client.networkRules.retrieve(id)`
-
-## Networks
-
-- `client.networks.list(params?)`
-- `client.networks.update(id, body?)`
-- `client.networks.retrieve(id)`
+- `client.memberships.update(id, body?)`
 
 ## Organizations
 
@@ -103,6 +60,10 @@
 - `client.organizations.delete(id)`
 - `client.organizations.retrieve(id)`
 - `client.organizations.update(id, body?)`
+
+## Resources
+
+- `client.resources.list(params?)`
 
 ## Secrets
 
@@ -113,14 +74,6 @@
 - `client.secrets.retrieve(id)`
 - `client.secrets.reveal(id)`
 
-## Snapshots
-
-- `client.snapshots.create(body?)`
-- `client.snapshots.list(params?)`
-- `client.snapshots.retrieve(id)`
-- `client.snapshots.download(id)`
-- `client.snapshots.restore(id, body?)`
-
 ## Statements
 
 - `client.statements.list(params?)`
@@ -128,33 +81,29 @@
 
 ## Storage
 
-- `client.storage.createBackend(body?)`
-- `client.storage.listBackends(params?)`
 - `client.storage.createBucket(body?)`
 - `client.storage.listBuckets(params?)`
-- `client.storage.deleteBackend(id)`
-- `client.storage.updateBackend(id, body?)`
-- `client.storage.retrieveBackend(id)`
+- `client.storage.searchObjects()`
 - `client.storage.deleteBucket(id)`
 - `client.storage.updateBucket(id, body?)`
 - `client.storage.retrieveBucket(id)`
+- `client.storage.createBucketFolder(id, body?)`
+- `client.storage.listBucketObjects(id)`
 - `client.storage.presignBucket(id, body?)`
-- `client.storage.validateBackend(id)`
+- `client.storage.copyBucketObject(id, body?)`
+- `client.storage.deleteBucketObject(id, body?)`
+- `client.storage.headBucketObject(id)`
+- `client.storage.moveBucketObject(id, body?)`
 
 ## Subscriptions
 
+- `client.subscriptions.balance(body?)`
 - `client.subscriptions.create(body?)`
 - `client.subscriptions.list(params?)`
+- `client.subscriptions.downgrade(body?)`
+- `client.subscriptions.portal()`
+- `client.subscriptions.upgrade(body?)`
 - `client.subscriptions.retrieve(subscriptionId)`
-
-## Tools
-
-- `client.tools.webSearch(body?)`
-
-## Videos
-
-- `client.videos.generate(body?)`
-- `client.videos.retrieve(generationId)`
 
 ## Webhooks
 
@@ -164,4 +113,8 @@
 - `client.webhooks.delete(id)`
 - `client.webhooks.update(id, body?)`
 - `client.webhooks.retrieve(id)`
+- `client.webhooks.listDeliveries(id, params?)`
 - `client.webhooks.rotateSecret(id)`
+- `client.webhooks.signingSecret(id)`
+- `client.webhooks.test(id)`
+- `client.webhooks.retrieveDelivery(id, deliveryId)`

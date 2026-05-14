@@ -109,6 +109,7 @@ export class HTTPClient {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'User-Agent': `layerbrain-node/${VERSION} node/${process.versions.node}`,
+      'x-layerbrain-source': 'api',
       ...this.extraHeaders,
       ...(extraHeaders ?? {}),
     };

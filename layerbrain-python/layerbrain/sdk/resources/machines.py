@@ -43,9 +43,9 @@ class Machines(Resource):
             path="/machines",
         )
 
-    async def create(self, *, duration_minutes: int = 15, **kwargs: Any) -> Machine:
-        """Create a new machine by purchasing a contract."""
-        body = {"duration_minutes": duration_minutes, **kwargs}
+    async def create(self, **kwargs: Any) -> Machine:
+        """Create a new machine."""
+        body = dict(kwargs)
         data = await self._post("/machines", json=body)
         return Machine(**data)
 
@@ -77,7 +77,7 @@ class Machines(Resource):
 
         Usage::
 
-            async with client.machines.connect("mach_abc123") as machine:
+            async with client.machines.connect("mch_abc123") as machine:
                 result = await machine.shell.execute("ls -la")
                 files = await machine.filesystem.list("~/brain")
         """
@@ -92,7 +92,7 @@ class Machines(Resource):
 
         url = f"{ws_url}/v1/machines/{machine_id}"
 
-        headers = {}
+        headers = {"x-layerbrain-source": "api"}
         if self._client._api_key:
             headers["Authorization"] = f"Bearer {self._client._api_key}"
 

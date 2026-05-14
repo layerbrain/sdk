@@ -23,101 +23,109 @@ class TestMachines(unittest.IsolatedAsyncioTestCase):
         self.mock_client._get.return_value = {
             "object": "list",
             "data": [
-                {"id": "mach_1", "object": "machine", "name": "dev", "state": "active"},
-                {"id": "mach_2", "object": "machine", "name": "prod", "state": "stopped"},
+                {"id": "mch_1", "object": "machine", "name": "dev", "state": "active"},
+                {"id": "mch_2", "object": "machine", "name": "prod", "state": "stopped"},
             ],
             "has_more": False,
         }
         page = await self.machines.list()
         self.assertEqual(len(page), 2)
-        self.assertEqual(page.data[0]["id"], "mach_1")
+        self.assertEqual(page.data[0]["id"], "mch_1")
         self.mock_client._get.assert_called_once_with("/machines", params=None)
 
     async def test_create_returns_machine(self):
         self.mock_client._post.return_value = {
-            "id": "mach_new",
+            "id": "mch_new",
             "object": "machine",
             "name": "test-machine",
             "state": "provisioning",
         }
         machine = await self.machines.create(
-            compute="A100",
-            duration_minutes=30,
             name="test-machine",
+            cpu=2,
+            ram=4,
+            disk_gb=20,
+            ttl_minutes=60,
         )
         self.assertIsInstance(machine, Machine)
-        self.assertEqual(machine.id, "mach_new")
+        self.assertEqual(machine.id, "mch_new")
         self.assertEqual(machine.state, "provisioning")
         self.mock_client._post.assert_called_once_with(
             "/machines",
-            json={"compute": "A100", "duration_minutes": 30, "name": "test-machine"},
+            json={
+                "name": "test-machine",
+                "cpu": 2,
+                "ram": 4,
+                "disk_gb": 20,
+                "ttl_minutes": 60,
+            },
         )
 
     async def test_create_without_name(self):
         self.mock_client._post.return_value = {
-            "id": "mach_new",
+            "id": "mch_new",
             "object": "machine",
             "state": "provisioning",
         }
-        await self.machines.create(compute="H100")
+        await self.machines.create(cpu=1, ram=1)
         self.mock_client._post.assert_called_once_with(
             "/machines",
-            json={"compute": "H100", "duration_minutes": 15},
+            json={"cpu": 1, "ram": 1},
         )
 
     async def test_extend(self):
         self.mock_client._post.return_value = {
-            "id": "mach_123",
+            "id": "mch_123",
             "object": "machine",
         }
-        payload = await self.machines.extend("mach_123", duration_minutes=30)
+        payload = await self.machines.extend("mch_123", duration_minutes=30)
         self.mock_client._post.assert_called_once_with(
-            "/machines/mach_123/extend",
+            "/machines/mch_123/extend",
             json={"duration_minutes": 30},
         )
-        self.assertEqual(payload["id"], "mach_123")
+        self.assertEqual(payload["id"], "mch_123")
 
     async def test_restore(self):
         self.mock_client._post.return_value = {
-            "id": "mach_123",
+            "id": "mch_123",
             "object": "machine",
         }
-        payload = await self.machines.restore("mach_123", snapshot="snp_123")
+        payload = await self.machines.restore("mch_123", snapshot="snp_123")
         self.mock_client._post.assert_called_once_with(
-            "/machines/mach_123/restore",
+            "/machines/mch_123/restore",
             json={"snapshot": "snp_123"},
         )
-        self.assertEqual(payload["id"], "mach_123")
+        self.assertEqual(payload["id"], "mch_123")
 
     async def test_snapshot(self):
         self.mock_client._post.return_value = {
             "id": "snp_123",
             "object": "snapshot",
         }
-        payload = await self.machines.snapshot("mach_123", name="nightly")
+        payload = await self.machines.snapshot("mch_123", name="nightly")
         self.mock_client._post.assert_called_once_with(
-            "/machines/mach_123/snapshot",
+            "/machines/mch_123/snapshot",
             json={"name": "nightly"},
         )
         self.assertEqual(payload["id"], "snp_123")
 
     async def test_retrieve_returns_machine(self):
         self.mock_client._get.return_value = {
-            "id": "mach_123",
+            "id": "mch_123",
             "object": "machine",
             "name": "my-machine",
             "state": "active",
             "ipv4": "1.2.3.4",
         }
-        machine = await self.machines.retrieve("mach_123")
+        machine = await self.machines.retrieve("mch_123")
         self.assertIsInstance(machine, Machine)
         self.assertEqual(machine.ipv4, "1.2.3.4")
-        self.mock_client._get.assert_called_once_with("/machines/mach_123", params=None)
+        self.mock_client._get.assert_called_once_with("/machines/mch_123", params=None)
 
     async def test_delete(self):
         self.mock_client._delete.return_value = {}
-        await self.machines.delete("mach_123")
-        self.mock_client._delete.assert_called_once_with("/machines/mach_123")
+        await self.machines.delete("mch_123")
+        self.mock_client._delete.assert_called_once_with("/machines/mch_123")
 
 
 if __name__ == "__main__":

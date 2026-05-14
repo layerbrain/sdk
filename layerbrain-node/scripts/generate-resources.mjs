@@ -14,6 +14,8 @@ export const RESOURCE_DEFINITIONS = {
   chat: { className: 'ChatResource', property: 'chat', title: 'Chat', manual: true },
   compute: { className: 'ComputeResource', property: 'compute', title: 'Compute' },
   embeddings: { className: 'EmbeddingsResource', property: 'embeddings', title: 'Embeddings' },
+  events: { className: 'EventsResource', property: 'events', title: 'Events' },
+  exports: { className: 'ExportsResource', property: 'exports', title: 'Exports' },
   images: { className: 'ImagesResource', property: 'images', title: 'Images' },
   machines: { className: 'MachinesResource', property: 'machines', title: 'Machines' },
   memberships: { className: 'MembershipsResource', property: 'memberships', title: 'Memberships' },
@@ -22,6 +24,7 @@ export const RESOURCE_DEFINITIONS = {
   networkRules: { className: 'NetworkRulesResource', property: 'networkRules', title: 'Network Rules' },
   networks: { className: 'NetworksResource', property: 'networks', title: 'Networks' },
   organizations: { className: 'OrganizationsResource', property: 'organizations', title: 'Organizations' },
+  resources: { className: 'ResourcesResource', property: 'resources', title: 'Resources' },
   secrets: { className: 'SecretsResource', property: 'secrets', title: 'Secrets' },
   snapshots: { className: 'SnapshotsResource', property: 'snapshots', title: 'Snapshots' },
   statements: { className: 'StatementsResource', property: 'statements', title: 'Statements' },
@@ -55,9 +58,16 @@ const OPERATION_DEFINITIONS = {
   'brains_retrieve_brain_get': { resource: 'brains', method: 'retrieve', kind: 'get' },
   'brains_archive_brain_post': { resource: 'brains', method: 'archive', kind: 'post', emptyBody: true },
 
-  'compute_list_compute_get': { resource: 'compute', method: 'list', kind: 'list' },
-  'compute_retrieve_compute_get': { resource: 'compute', method: 'retrieve', kind: 'get' },
+  'compute_retrieve_compute_availability_get': { resource: 'compute', method: 'availability', kind: 'query' },
   'embeddings_create_embedding_post': { resource: 'embeddings', method: 'create', kind: 'post' },
+
+  'events_list_get': { resource: 'events', method: 'list', kind: 'list' },
+  'events_types_get': { resource: 'events', method: 'types', kind: 'get' },
+  'events_retrieve_get': { resource: 'events', method: 'retrieve', kind: 'get' },
+
+  'exports_create_post': { resource: 'exports', method: 'create', kind: 'post' },
+  'exports_list_get': { resource: 'exports', method: 'list', kind: 'list' },
+  'exports_download_get': { resource: 'exports', method: 'download', kind: 'get' },
 
   'images_create_edit_post': { resource: 'images', method: 'edit', kind: 'post' },
   'images_create_generation_post': { resource: 'images', method: 'generate', kind: 'post' },
@@ -65,7 +75,7 @@ const OPERATION_DEFINITIONS = {
   'machines_create_machine_post': { resource: 'machines', method: 'create', kind: 'post', machineCreate: true },
   'machines_list_machines_get': { resource: 'machines', method: 'list', kind: 'list' },
   'machines_delete_machine_delete': { resource: 'machines', method: 'delete', kind: 'delete' },
-  'machines_get_machine_get': { resource: 'machines', method: 'retrieve', kind: 'get' },
+  'machines_retrieve_machine_get': { resource: 'machines', method: 'retrieve', kind: 'get' },
   'machines_connect_websocket': { resource: 'machines', method: 'connect', kind: 'custom' },
   'machines_extend_machine_post': { resource: 'machines', method: 'extend', kind: 'post' },
   'machines_restore_machine_post': { resource: 'machines', method: 'restore', kind: 'post' },
@@ -74,6 +84,8 @@ const OPERATION_DEFINITIONS = {
   'memberships_create_post': { resource: 'memberships', method: 'create', kind: 'post' },
   'memberships_list_get': { resource: 'memberships', method: 'list', kind: 'list' },
   'memberships_retrieve_get': { resource: 'memberships', method: 'retrieve', kind: 'get' },
+  'memberships_destroy_delete': { resource: 'memberships', method: 'delete', kind: 'delete' },
+  'memberships_patch_patch': { resource: 'memberships', method: 'update', kind: 'patch' },
 
   'models_list_models_get': { resource: 'models', method: 'list', kind: 'list' },
   'models_retrieve_model_get': { resource: 'models', method: 'retrieve', kind: 'get' },
@@ -97,6 +109,8 @@ const OPERATION_DEFINITIONS = {
   'organizations_retrieve_get': { resource: 'organizations', method: 'retrieve', kind: 'get' },
   'organizations_patch_patch': { resource: 'organizations', method: 'update', kind: 'patch' },
 
+  'resources_list_get': { resource: 'resources', method: 'list', kind: 'list' },
+
   'secrets_create_post': { resource: 'secrets', method: 'create', kind: 'post' },
   'secrets_list_get': { resource: 'secrets', method: 'list', kind: 'list' },
   'secrets_destroy_delete': { resource: 'secrets', method: 'delete', kind: 'delete' },
@@ -113,22 +127,27 @@ const OPERATION_DEFINITIONS = {
   'statements_statements_list_get': { resource: 'statements', method: 'list', kind: 'list' },
   'statements_statement_retrieve_get': { resource: 'statements', method: 'retrieve', kind: 'get' },
 
-  'storage_create_backend_post': { resource: 'storage', method: 'createBackend', kind: 'post' },
-  'storage_list_backends_get': { resource: 'storage', method: 'listBackends', kind: 'list' },
-  'storage_create_bucket_post': { resource: 'storage', method: 'createBucket', kind: 'post' },
-  'storage_list_buckets_get': { resource: 'storage', method: 'listBuckets', kind: 'list' },
-  'storage_delete_backend_delete': { resource: 'storage', method: 'deleteBackend', kind: 'delete' },
-  'storage_patch_backend_patch': { resource: 'storage', method: 'updateBackend', kind: 'patch' },
-  'storage_retrieve_backend_get': { resource: 'storage', method: 'retrieveBackend', kind: 'get' },
-  'storage_delete_bucket_delete': { resource: 'storage', method: 'deleteBucket', kind: 'delete' },
-  'storage_patch_bucket_patch': { resource: 'storage', method: 'updateBucket', kind: 'patch' },
-  'storage_retrieve_bucket_get': { resource: 'storage', method: 'retrieveBucket', kind: 'get' },
-  'storage_presign_bucket_post': { resource: 'storage', method: 'presignBucket', kind: 'post' },
-  'storage_validate_backend_post': { resource: 'storage', method: 'validateBackend', kind: 'post', emptyBody: true },
+  'buckets_create_bucket_post': { resource: 'storage', method: 'createBucket', kind: 'post' },
+  'buckets_list_buckets_get': { resource: 'storage', method: 'listBuckets', kind: 'list' },
+  'buckets_search_storage_objects_get': { resource: 'storage', method: 'searchObjects', kind: 'query' },
+  'buckets_delete_bucket_delete': { resource: 'storage', method: 'deleteBucket', kind: 'delete' },
+  'buckets_patch_bucket_patch': { resource: 'storage', method: 'updateBucket', kind: 'patch' },
+  'buckets_retrieve_bucket_get': { resource: 'storage', method: 'retrieveBucket', kind: 'get' },
+  'buckets_create_bucket_folder_post': { resource: 'storage', method: 'createBucketFolder', kind: 'post' },
+  'buckets_list_bucket_objects_get': { resource: 'storage', method: 'listBucketObjects', kind: 'query' },
+  'buckets_presign_bucket_post': { resource: 'storage', method: 'presignBucket', kind: 'post' },
+  'buckets_copy_bucket_object_post': { resource: 'storage', method: 'copyBucketObject', kind: 'post' },
+  'buckets_delete_bucket_object_post': { resource: 'storage', method: 'deleteBucketObject', kind: 'post' },
+  'buckets_head_bucket_object_get': { resource: 'storage', method: 'headBucketObject', kind: 'query' },
+  'buckets_move_bucket_object_post': { resource: 'storage', method: 'moveBucketObject', kind: 'post' },
 
   'subscriptions_create_post': { resource: 'subscriptions', method: 'create', kind: 'post' },
   'subscriptions_list_get': { resource: 'subscriptions', method: 'list', kind: 'list' },
   'subscriptions_retrieve_get': { resource: 'subscriptions', method: 'retrieve', kind: 'get' },
+  'subscriptions_balance_post': { resource: 'subscriptions', method: 'balance', kind: 'post' },
+  'subscriptions_downgrade_post': { resource: 'subscriptions', method: 'downgrade', kind: 'post' },
+  'subscriptions_portal_post': { resource: 'subscriptions', method: 'portal', kind: 'post', emptyBody: true },
+  'subscriptions_upgrade_post': { resource: 'subscriptions', method: 'upgrade', kind: 'post' },
 
   '3d_create_generation_post': { resource: 'threeD', method: 'generate', kind: 'post' },
   '3d_retrieve_generation_get': { resource: 'threeD', method: 'retrieve', kind: 'get' },
@@ -145,9 +164,135 @@ const OPERATION_DEFINITIONS = {
   'webhooks_patch_patch': { resource: 'webhooks', method: 'update', kind: 'patch' },
   'webhooks_retrieve_get': { resource: 'webhooks', method: 'retrieve', kind: 'get' },
   'webhooks_rotate_secret_post': { resource: 'webhooks', method: 'rotateSecret', kind: 'post', emptyBody: true },
+  'webhooks_deliveries_get': { resource: 'webhooks', method: 'listDeliveries', kind: 'list' },
+  'webhooks_signing_secret_get': { resource: 'webhooks', method: 'signingSecret', kind: 'get' },
+  'webhooks_test_post': { resource: 'webhooks', method: 'test', kind: 'post', emptyBody: true },
+  'webhooks_delivery_get': { resource: 'webhooks', method: 'retrieveDelivery', kind: 'get' },
 };
 
 const HTTP_METHODS = new Set(['get', 'post', 'patch', 'put', 'delete']);
+
+const ADDITIONAL_SDK_RESOURCE_CLASSES = {
+  audio: `export class AudioResource extends ResourceBase {
+  speech(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/audio/speech', body);
+  }
+
+  transcriptions(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/audio/transcriptions', body);
+  }
+}`,
+  embeddings: `export class EmbeddingsResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/embeddings', body);
+  }
+}`,
+  images: `export class ImagesResource extends ResourceBase {
+  edit(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/images/edits', body);
+  }
+
+  generate(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/images/generations', body);
+  }
+}`,
+  models: `export class ModelsResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/models', { page: 1, pageSize: 10, ...params });
+  }
+
+  retrieve(model: string): Promise<JsonObject> {
+    return this.get(\`/models/\${encodeURIComponent(model)}\`);
+  }
+}`,
+  networkFlows: `export class NetworkFlowsResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/network-flows', { page: 1, pageSize: 10, ...params });
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/network-flows/\${encodeURIComponent(id)}\`);
+  }
+}`,
+  networkRules: `export class NetworkRulesResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/network-rules', body);
+  }
+
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/network-rules', { page: 1, pageSize: 10, ...params });
+  }
+
+  delete(id: string): Promise<JsonObject> {
+    return super.delete(\`/network-rules/\${encodeURIComponent(id)}\`);
+  }
+
+  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(\`/network-rules/\${encodeURIComponent(id)}\`, body);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/network-rules/\${encodeURIComponent(id)}\`);
+  }
+}`,
+  networks: `export class NetworksResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/networks', { page: 1, pageSize: 10, ...params });
+  }
+
+  update(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.patch(\`/networks/\${encodeURIComponent(id)}\`, body);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/networks/\${encodeURIComponent(id)}\`);
+  }
+}`,
+  snapshots: `export class SnapshotsResource extends ResourceBase {
+  create(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/snapshots', body);
+  }
+
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/snapshots', { page: 1, pageSize: 10, ...params });
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/snapshots/\${encodeURIComponent(id)}\`);
+  }
+
+  download(id: string): Promise<JsonObject> {
+    return this.get(\`/snapshots/\${encodeURIComponent(id)}/download\`);
+  }
+
+  restore(id: string, body: JsonObject = {}): Promise<JsonObject> {
+    return this.post(\`/snapshots/\${encodeURIComponent(id)}/restore\`, body);
+  }
+}`,
+  threeD: `export class ThreeDResource extends ResourceBase {
+  generate(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/3d/generations', body);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/3d/generations/\${encodeURIComponent(id)}\`);
+  }
+}`,
+  tools: `export class ToolsResource extends ResourceBase {
+  webSearch(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/tools/web-search', body);
+  }
+}`,
+  videos: `export class VideosResource extends ResourceBase {
+  generate(body: JsonObject = {}): Promise<JsonObject> {
+    return this.post('/videos/generations', body);
+  }
+
+  retrieve(id: string): Promise<JsonObject> {
+    return this.get(\`/videos/generations/\${encodeURIComponent(id)}\`);
+  }
+}`,
+};
 
 export function loadSpec() {
   return JSON.parse(fs.readFileSync(SPEC_PATH, 'utf8'));
@@ -222,6 +367,8 @@ function methodSignature(operation) {
   const params = operation.pathParams.map((param) => `${param.name}: string`);
   if (operation.kind === 'list') {
     params.push('params: ListParams = {}');
+  } else if (operation.kind === 'query') {
+    params.push('params: JsonObject = {}');
   } else if (['post', 'patch', 'put'].includes(operation.kind) && !operation.emptyBody) {
     params.push('body: JsonObject = {}');
   }
@@ -236,6 +383,9 @@ function methodBody(operation) {
   if (operation.kind === 'get') {
     return `return this.get(${requestPath});`;
   }
+  if (operation.kind === 'query') {
+    return `return this.get(${requestPath}, params);`;
+  }
   if (operation.kind === 'delete') {
     return `return super.delete(${requestPath});`;
   }
@@ -243,7 +393,7 @@ function methodBody(operation) {
     return `return this.patch(${requestPath}, body);`;
   }
   if (operation.machineCreate) {
-    return `const payload = { duration_minutes: 15, ...body };\nreturn this.post(${requestPath}, payload);`;
+    return `return this.post(${requestPath}, body);`;
   }
   if (operation.emptyBody) {
     return `return this.post(${requestPath}, {});`;
@@ -340,7 +490,12 @@ function generateClass(resource) {
 }
 
 function generateResourcesFile(resources) {
-  const classes = resources.filter((resource) => !resource.manual).map(generateClass).join('\n\n');
+  const generatedKeys = new Set(resources.map((resource) => resource.key));
+  const generatedClasses = resources.filter((resource) => !resource.manual).map(generateClass);
+  const additionalClasses = Object.entries(ADDITIONAL_SDK_RESOURCE_CLASSES)
+    .filter(([key]) => !generatedKeys.has(key))
+    .map(([, source]) => source);
+  const classes = [...generatedClasses, ...additionalClasses].join('\n\n');
   return `import type { ListPage } from '../core/pagination.js';
 import { MachineConnection } from '../machines/connection.js';
 import { MachineTransport } from '../machines/transport.js';
@@ -352,8 +507,12 @@ ${classes}
 
 function generateClientFile(resources) {
   const generatedResources = resources.filter((resource) => !resource.manual);
-  const classNames = generatedResources.map((resource) => resource.className).sort();
-  const allResources = [...generatedResources, RESOURCE_DEFINITIONS.chat]
+  const generatedKeys = new Set(generatedResources.map((resource) => resource.key));
+  const additionalResources = Object.keys(ADDITIONAL_SDK_RESOURCE_CLASSES)
+    .filter((key) => !generatedKeys.has(key))
+    .map((key) => RESOURCE_DEFINITIONS[key]);
+  const classNames = [...generatedResources, ...additionalResources].map((resource) => resource.className).sort();
+  const allResources = [...generatedResources, ...additionalResources, RESOURCE_DEFINITIONS.chat]
     .sort((left, right) => left.property.localeCompare(right.property));
 
   return `import { HTTPClient, type HTTPClientOptions } from './core/http.js';

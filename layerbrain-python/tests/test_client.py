@@ -26,7 +26,7 @@ class TestRaiseForStatus(unittest.TestCase):
         raise_for_status(200, {"object": "machine"})
 
     def test_201_does_not_raise(self):
-        raise_for_status(201, {"id": "mach_123"})
+        raise_for_status(201, {"id": "mch_123"})
 
     def test_400_raises_validation_error(self):
         with self.assertRaises(ValidationError) as ctx:
@@ -79,6 +79,7 @@ class TestSyncHTTPClient(unittest.TestCase):
         client = SyncHTTPClient(api_key="sk-test-key-123", base_url="https://test.api.com")
         headers = client._build_headers()
         self.assertEqual(headers["Authorization"], "Bearer sk-test-key-123")
+        self.assertEqual(headers["x-layerbrain-source"], "api")
 
     def test_user_agent_header(self):
         client = SyncHTTPClient(api_key="sk-test", base_url="https://test.api.com")
@@ -104,13 +105,13 @@ class TestSyncHTTPClient(unittest.TestCase):
         """Test that _post makes a POST request with JSON body."""
         mock_response = MagicMock()
         mock_response.status_code = 201
-        mock_response.json.return_value = {"id": "mach_123", "object": "machine"}
+        mock_response.json.return_value = {"id": "mch_123", "object": "machine"}
         mock_request.return_value = mock_response
 
         client = SyncHTTPClient(api_key="sk-test", base_url="https://test.api.com")
         result = client._post("/machines", json={"compute": "A100"})
 
-        self.assertEqual(result["id"], "mach_123")
+        self.assertEqual(result["id"], "mch_123")
 
     @patch.object(httpx.Client, "request")
     def test_delete_request(self, mock_request):
@@ -121,7 +122,7 @@ class TestSyncHTTPClient(unittest.TestCase):
         mock_request.return_value = mock_response
 
         client = SyncHTTPClient(api_key="sk-test", base_url="https://test.api.com")
-        result = client._delete("/machines/mach_123")
+        result = client._delete("/machines/mch_123")
 
         self.assertEqual(result, {})
 

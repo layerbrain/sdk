@@ -4,9 +4,10 @@ import {
   APIKeysResource,
   AccountsResource,
   AudioResource,
-  BrainsResource,
   ComputeResource,
   EmbeddingsResource,
+  EventsResource,
+  ExportsResource,
   ImagesResource,
   MachinesResource,
   MembershipsResource,
@@ -15,6 +16,7 @@ import {
   NetworkRulesResource,
   NetworksResource,
   OrganizationsResource,
+  ResourcesResource,
   SecretsResource,
   SnapshotsResource,
   StatementsResource,
@@ -32,10 +34,11 @@ export class Layerbrain {
   readonly accounts: AccountsResource;
   readonly apiKeys: APIKeysResource;
   readonly audio: AudioResource;
-  readonly brains: BrainsResource;
   readonly chat: ChatResource;
   readonly compute: ComputeResource;
   readonly embeddings: EmbeddingsResource;
+  readonly events: EventsResource;
+  readonly exports: ExportsResource;
   readonly images: ImagesResource;
   readonly machines: MachinesResource;
   readonly memberships: MembershipsResource;
@@ -44,6 +47,7 @@ export class Layerbrain {
   readonly networkRules: NetworkRulesResource;
   readonly networks: NetworksResource;
   readonly organizations: OrganizationsResource;
+  readonly resources: ResourcesResource;
   readonly secrets: SecretsResource;
   readonly snapshots: SnapshotsResource;
   readonly statements: StatementsResource;
@@ -62,10 +66,11 @@ export class Layerbrain {
     this.accounts = new AccountsResource(this.httpClient);
     this.apiKeys = new APIKeysResource(this.httpClient);
     this.audio = new AudioResource(this.httpClient);
-    this.brains = new BrainsResource(this.httpClient);
     this.chat = new ChatResource(this.httpClient);
     this.compute = new ComputeResource(this.httpClient);
     this.embeddings = new EmbeddingsResource(this.httpClient);
+    this.events = new EventsResource(this.httpClient);
+    this.exports = new ExportsResource(this.httpClient);
     this.images = new ImagesResource(this.httpClient);
     this.machines = new MachinesResource(this.httpClient);
     this.memberships = new MembershipsResource(this.httpClient);
@@ -74,6 +79,7 @@ export class Layerbrain {
     this.networkRules = new NetworkRulesResource(this.httpClient);
     this.networks = new NetworksResource(this.httpClient);
     this.organizations = new OrganizationsResource(this.httpClient);
+    this.resources = new ResourcesResource(this.httpClient);
     this.secrets = new SecretsResource(this.httpClient);
     this.snapshots = new SnapshotsResource(this.httpClient);
     this.statements = new StatementsResource(this.httpClient);

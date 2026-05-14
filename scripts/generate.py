@@ -31,6 +31,7 @@ SKIP_TAGS = {"Health", "Username"}
 MODULE_OVERRIDES = {
     "Api-Keys": "api_keys",
     "3D": "threed",
+    "Buckets": "storage",
     "Network_Rules": "network_rules",
     "Network_Flows": "network_flows",
 }
@@ -39,6 +40,7 @@ MODULE_OVERRIDES = {
 CLASS_OVERRIDES = {
     "Api-Keys": "APIKeys",
     "3D": "ThreeD",
+    "Buckets": "Storage",
     "Network_Rules": "NetworkRules",
     "Network_Flows": "NetworkFlows",
 }
@@ -175,9 +177,7 @@ def _relative_method_name(ep: Endpoint, res: Resource) -> str:
     """Build a method name from all non-param path segments after the resource base.
 
     E.g. for storage resource:
-        /storage/backends              → "backend"
-        /storage/backends/{id}/validate → "backend_validate"
-        /storage/buckets/{id}/presign  → "bucket_presign"
+        /buckets/{id}/presign  → "bucket_presign"
     """
     base_path = f"/{res.module_name}" if res.module_name != "models" else "/models"
     # Strip the base prefix from the path
@@ -320,7 +320,7 @@ def _method_name(ep: Endpoint, res: Resource, used_names: set[str]) -> Optional[
         return candidate
 
     if ep.method == "delete":
-        # Check for sub-path deletes (e.g. /storage/keys/{id} vs /storage/buckets/{id})
+        # Check for sub-path deletes.
         parts = ep.path.rstrip("/").split("/")
         last = parts[-1]
         if not last.startswith("{") and last != res.module_name:
@@ -537,12 +537,13 @@ def main():
 
     # Hand-written resources that the generator must never overwrite.
     # These require custom logic (streaming, Pydantic response parsing, URL encoding, SSH, etc.)
-    PRESERVED_MODULES = {"chat", "machines", "models", "webhooks"}
+    PRESERVED_MODULES = {"chat", "machines", "models", "storage", "webhooks"}
 
     preserved = [
         Resource(tag="Chat", module_name="chat", class_name="Chat"),
         Resource(tag="Machines", module_name="machines", class_name="Machines"),
         Resource(tag="Models", module_name="models", class_name="Models"),
+        Resource(tag="Storage", module_name="storage", class_name="Storage"),
         Resource(tag="Webhooks", module_name="webhooks", class_name="Webhooks"),
     ]
 

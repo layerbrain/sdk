@@ -15,7 +15,7 @@ class Organizations(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """List organizations for the authenticated user."""
+        """List organizations"""
         request_path = "/organizations"
         params: dict[str, Any] = {}
         if page is not None:
@@ -33,17 +33,17 @@ class Organizations(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Handle organization creation."""
+        """Create an organization"""
         return await self._post("/organizations", json=kwargs)
 
     async def delete(self, id: str) -> dict:
-        """Delete an organization."""
+        """Delete an organization"""
         return await self._delete(f"/organizations/{id}")
 
     async def retrieve(self, id: str) -> dict:
-        """Retrieve a single organization."""
+        """Retrieve an organization"""
         return await self._get(f"/organizations/{id}", params=None)
 
     async def update(self, id: str, **kwargs: Any) -> dict:
-        """Update an organization."""
+        """Update an organization"""
         return await self._patch(f"/organizations/{id}", json=kwargs)

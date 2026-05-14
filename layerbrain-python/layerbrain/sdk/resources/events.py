@@ -6,8 +6,8 @@ from .._resource import Resource
 from .._pagination import SyncPage
 
 
-class Accounts(Resource):
-    """Accounts API resource (auto-generated)."""
+class Events(Resource):
+    """Events API resource (auto-generated)."""
 
     async def list(
         self,
@@ -15,8 +15,8 @@ class Accounts(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """Retrieve the current account"""
-        request_path = "/accounts"
+        """List organization events"""
+        request_path = "/events"
         params: dict[str, Any] = {}
         if page is not None:
             params["page"] = page
@@ -32,14 +32,10 @@ class Accounts(Resource):
             path=request_path,
         )
 
-    async def delete(self, id: str) -> dict:
-        """Delete an account"""
-        return await self._delete(f"/accounts/{id}")
+    async def create(self, **kwargs: Any) -> dict:
+        """Create an organization event"""
+        return await self._post("/events", json=kwargs)
 
     async def retrieve(self, id: str) -> dict:
-        """Retrieve an account"""
-        return await self._get(f"/accounts/{id}", params=None)
-
-    async def update(self, id: str, **kwargs: Any) -> dict:
-        """Update an account"""
-        return await self._patch(f"/accounts/{id}", json=kwargs)
+        """Retrieve an event"""
+        return await self._get(f"/events/{id}", params=None)

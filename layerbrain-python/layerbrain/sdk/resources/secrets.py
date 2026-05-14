@@ -15,7 +15,7 @@ class Secrets(Resource):
         page_size: Optional[int] = 10,
         ordering: Optional[str] = None,
     ) -> SyncPage:
-        """List secrets for the authenticated user's organization."""
+        """List secrets"""
         request_path = "/secrets"
         params: dict[str, Any] = {}
         if page is not None:
@@ -33,21 +33,21 @@ class Secrets(Resource):
         )
 
     async def create(self, **kwargs: Any) -> dict:
-        """Handle secret creation."""
+        """Create a secret"""
         return await self._post("/secrets", json=kwargs)
 
     async def delete(self, id: str) -> dict:
-        """Handle secret deletion."""
+        """Delete a secret"""
         return await self._delete(f"/secrets/{id}")
 
     async def retrieve(self, id: str) -> dict:
-        """Handle secret retrieval."""
+        """Retrieve a secret"""
         return await self._get(f"/secrets/{id}", params=None)
 
     async def update(self, id: str, **kwargs: Any) -> dict:
-        """Handle secret updates via PATCH."""
+        """Update a secret"""
         return await self._patch(f"/secrets/{id}", json=kwargs)
 
     async def reveal(self, id: str) -> dict:
-        """Reveal the unmasked secret value."""
+        """Reveal a secret value"""
         return await self._get(f"/secrets/{id}/reveal", params=None)

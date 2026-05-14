@@ -70,7 +70,7 @@ class Webhooks(Resource):
         if raw_events:
             query = "?" + urlencode({"events": raw_events})
 
-        headers: dict[str, str] = {}
+        headers: dict[str, str] = {"x-layerbrain-source": "api"}
         if self._client._api_key:
             headers["Authorization"] = f"Bearer {self._client._api_key}"
 

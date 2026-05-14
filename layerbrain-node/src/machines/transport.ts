@@ -6,9 +6,18 @@ export interface TransportMessage {
   id?: string;
   method?: string;
   params?: Record<string, unknown>;
+  body?: Record<string, unknown>;
+  headers?: Record<string, string>;
   data?: unknown;
   error?: { type?: string; message?: string };
   event?: string;
+}
+
+export interface SendOptions {
+  params?: Record<string, unknown>;
+  body?: Record<string, unknown>;
+  headers?: Record<string, string>;
+  timeout?: number;
 }
 
 type PendingRequest = {
@@ -22,7 +31,10 @@ export class MachineTransport {
   private readonly eventHandlers = new Map<string, Set<(data: unknown) => void>>();
   private closing = false;
 
-  constructor(private readonly socket: WebSocket) {
+  constructor(
+    private readonly socket: WebSocket,
+    private readonly defaultHeaders: Record<string, string> = {},
+  ) {
     this.socket.on('message', (data) => {
       this.handleMessage(typeof data === 'string' ? data : data.toString('utf8'));
     });
@@ -62,7 +74,7 @@ export class MachineTransport {
       });
     });
 
-    return new MachineTransport(socket);
+    return new MachineTransport(socket, headers);
   }
 
   on(event: string, handler: (data: unknown) => void): () => void {
@@ -79,7 +91,13 @@ export class MachineTransport {
     };
   }
 
-  async send(method: string, params: Record<string, unknown>, timeout = 30_000): Promise<unknown> {
+  async send(method: string, options: SendOptions = {}): Promise<unknown> {
+    const { params, body, timeout = 30_000 } = options;
+    if (params !== undefined && body !== undefined) {
+      throw new MachineError('validation_error', 'WebSocket requests cannot include both params and body');
+    }
+    const headers = this.mergeHeaders(options.headers);
+
     const id = randomUUID();
 
     const responsePromise = new Promise<unknown>((resolve, reject) => {
@@ -95,12 +113,57 @@ export class MachineTransport {
       });
     });
 
-    await this.sendRaw({ id, method, params });
+    await this.sendRaw({ id, method, headers, params, body });
+    return responsePromise;
+  }
+
+  async authenticate(headers: Record<string, string>, timeout = 10_000): Promise<unknown> {
+    const id = randomUUID();
+    let offConnected: (() => void) | undefined;
+    let cleanup = () => {};
+
+    const responsePromise = new Promise<unknown>((resolve, reject) => {
+      const timeoutHandle = setTimeout(() => {
+        cleanup();
+        reject(new TimeoutError(`Machine authentication timed out after ${timeout}ms`));
+      }, timeout);
+
+      cleanup = () => {
+        clearTimeout(timeoutHandle);
+        offConnected?.();
+        this.pending.delete(id);
+      };
+
+      offConnected = this.on('machine.connected', (data) => {
+        cleanup();
+        resolve(data);
+      });
+
+      this.pending.set(id, {
+        resolve: (value) => {
+          cleanup();
+          resolve(value);
+        },
+        reject: (error) => {
+          cleanup();
+          reject(error);
+        },
+        timeout: timeoutHandle,
+      });
+    });
+
+    try {
+      await this.sendRaw({ id, method: 'session.connect', headers });
+    } catch (error) {
+      cleanup();
+      throw error;
+    }
+
     return responsePromise;
   }
 
   async emit(method: string, params: Record<string, unknown>): Promise<void> {
-    await this.sendRaw({ method, params });
+    await this.sendRaw({ method, headers: this.mergeHeaders(), params });
   }
 
   async close(): Promise<void> {
@@ -131,6 +194,11 @@ export class MachineTransport {
         resolve();
       });
     });
+  }
+
+  private mergeHeaders(headers: Record<string, string> = {}): Record<string, string> | undefined {
+    const merged = { ...this.defaultHeaders, ...headers };
+    return Object.keys(merged).length > 0 ? merged : undefined;
   }
 
   private handleMessage(raw: string): void {
