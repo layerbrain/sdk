@@ -1867,6 +1867,7 @@
                     "type": "array",
                     "items": {
                       "type": "object",
+                      "description": "Machine network attachment and create-time public port declarations. Public ports are not mutable; recreate the machine to revoke them.",
                       "properties": {
                         "network": {
                           "type": "string"
@@ -1875,6 +1876,7 @@
                           "type": "array",
                           "items": {
                             "type": "object",
+                            "description": "Create-time public ingress rule for a machine network. SSH port 22 is exposed automatically; other inbound ports require a public rule and a process listening inside the machine.",
                             "properties": {
                               "protocol": {
                                 "type": "string",
@@ -1882,14 +1884,16 @@
                                   "http",
                                   "tcp",
                                   "udp"
-                                ]
+                                ],
+                                "description": "Use http for plain HTTP ports or tcp for generic TCP/TLS such as HTTPS on 443."
                               },
                               "port": {
                                 "type": "integer",
                                 "minimum": 1
                               },
                               "public": {
-                                "type": "boolean"
+                                "type": "boolean",
+                                "description": "When true, the host firewall allows public ingress to this port."
                               }
                             },
                             "required": [
