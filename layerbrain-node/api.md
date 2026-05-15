@@ -48,7 +48,7 @@
 - `client.machines.list(params?)`
 - `client.machines.delete(id)`
 - `client.machines.retrieve(id)`
-- `client.machines.connect(id)` returns a WebSocket machine session. Use `conn.exec(command, options?)` to run commands through the fast `machine.command` path.
+- `client.machines.connect(id)`
 - `client.machines.extend(id, body?)`
 
 ## Memberships
