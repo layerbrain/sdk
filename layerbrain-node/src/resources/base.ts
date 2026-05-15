@@ -5,6 +5,7 @@ export interface ListParams {
   page?: number;
   pageSize?: number;
   ordering?: string;
+  [key: string]: unknown;
 }
 
 export type JsonObject = Record<string, unknown>;
@@ -47,18 +48,19 @@ export class ResourceBase {
   }
 
   protected listQuery(params: ListParams = {}): Record<string, unknown> | undefined {
-    const query: Record<string, unknown> = {};
+    const { page, pageSize, ordering, ...filters } = params;
+    const query: Record<string, unknown> = { ...filters };
 
-    if (params.page !== undefined) {
-      query.page = params.page;
+    if (page !== undefined) {
+      query.page = page;
     }
 
-    if (params.pageSize !== undefined) {
-      query.page_size = params.pageSize;
+    if (pageSize !== undefined) {
+      query.page_size = pageSize;
     }
 
-    if (params.ordering !== undefined) {
-      query.ordering = params.ordering;
+    if (ordering !== undefined) {
+      query.ordering = ordering;
     }
 
     return Object.keys(query).length > 0 ? query : undefined;

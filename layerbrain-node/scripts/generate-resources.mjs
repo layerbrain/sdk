@@ -81,7 +81,6 @@ const OPERATION_DEFINITIONS = {
   'machines_list_machines_get': { resource: 'machines', method: 'list', kind: 'list' },
   'machines_delete_machine_delete': { resource: 'machines', method: 'delete', kind: 'delete' },
   'machines_retrieve_machine_get': { resource: 'machines', method: 'retrieve', kind: 'get' },
-  'machines_socket_websocket': { resource: 'machines', method: 'createConnection', kind: 'custom' },
   'machines_connect_websocket': { resource: 'machines', method: 'connect', kind: 'custom' },
   'machines_extend_machine_post': { resource: 'machines', method: 'extend', kind: 'post' },
   'machines_restore_machine_post': { resource: 'machines', method: 'restore', kind: 'post' },
@@ -256,6 +255,11 @@ const ADDITIONAL_SDK_RESOURCE_CLASSES = {
 
   retrieve(id: string): Promise<JsonObject> {
     return this.get(\`/networks/\${encodeURIComponent(id)}\`);
+  }
+}`,
+  resources: `export class ResourcesResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/resources', { page: 1, pageSize: 10, ...params });
   }
 }`,
   snapshots: `export class SnapshotsResource extends ResourceBase {
@@ -461,46 +465,6 @@ function customMachinesMethods() {
     const url = this.websocketURL(\`/machines/\${encodeURIComponent(machineId)}\`);
     const transport = await MachineTransport.connect(url, this.websocketHeaders());
     return new MachineConnection(machineId, transport);
-  }
-
-  async createConnection(body: JsonObject = {}): Promise<MachineConnection> {
-    const transport = await MachineTransport.connect(
-      this.websocketURL('/machines'),
-      this.websocketHeaders(),
-    );
-    try {
-      const machine = await transport.send('machine.create', {
-        body,
-        timeout: 30_000,
-      }) as JsonObject;
-      const machineId = typeof machine.id === 'string' ? machine.id : '';
-      if (!machineId) {
-        await transport.close();
-        throw new Error('Machine create response did not include an id.');
-      }
-      return new MachineConnection(machineId, transport);
-    } catch (error) {
-      await transport.close();
-      throw error;
-    }
-  }
-
-  async run(body: JsonObject = {}, params: JsonObject = {}): Promise<JsonObject> {
-    const transport = await MachineTransport.connect(
-      this.websocketURL('/machines'),
-      this.websocketHeaders(),
-    );
-    try {
-      return (await transport.send('machine.run', {
-        body: {
-          ...body,
-          command: params,
-        },
-        timeout: 30_000,
-      }) as JsonObject) ?? {};
-    } finally {
-      await transport.close();
-    }
   }`;
 }
 

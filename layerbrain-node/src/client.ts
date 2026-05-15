@@ -17,6 +17,7 @@ import {
   NetworkRulesResource,
   NetworksResource,
   OrganizationsResource,
+  ResourcesResource,
   SecretsResource,
   SnapshotsResource,
   StatementsResource,
@@ -48,6 +49,7 @@ export class Layerbrain {
   readonly networkRules: NetworkRulesResource;
   readonly networks: NetworksResource;
   readonly organizations: OrganizationsResource;
+  readonly resources: ResourcesResource;
   readonly secrets: SecretsResource;
   readonly snapshots: SnapshotsResource;
   readonly statements: StatementsResource;
@@ -80,6 +82,7 @@ export class Layerbrain {
     this.networkRules = new NetworkRulesResource(this.httpClient);
     this.networks = new NetworksResource(this.httpClient);
     this.organizations = new OrganizationsResource(this.httpClient);
+    this.resources = new ResourcesResource(this.httpClient);
     this.secrets = new SecretsResource(this.httpClient);
     this.snapshots = new SnapshotsResource(this.httpClient);
     this.statements = new StatementsResource(this.httpClient);

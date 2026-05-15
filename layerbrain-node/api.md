@@ -46,7 +46,6 @@
 
 - `client.machines.create(body?)`
 - `client.machines.list(params?)`
-- `client.machines.createConnection()`
 - `client.machines.delete(id)`
 - `client.machines.retrieve(id)`
 - `client.machines.connect(id)`

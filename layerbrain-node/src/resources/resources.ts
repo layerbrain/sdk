@@ -131,46 +131,6 @@ export class MachinesResource extends ResourceBase {
     const transport = await MachineTransport.connect(url, this.websocketHeaders());
     return new MachineConnection(machineId, transport);
   }
-
-  async createConnection(body: JsonObject = {}): Promise<MachineConnection> {
-    const transport = await MachineTransport.connect(
-      this.websocketURL('/machines'),
-      this.websocketHeaders(),
-    );
-    try {
-      const machine = await transport.send('machine.create', {
-        body,
-        timeout: 30_000,
-      }) as JsonObject;
-      const machineId = typeof machine.id === 'string' ? machine.id : '';
-      if (!machineId) {
-        await transport.close();
-        throw new Error('Machine create response did not include an id.');
-      }
-      return new MachineConnection(machineId, transport);
-    } catch (error) {
-      await transport.close();
-      throw error;
-    }
-  }
-
-  async run(body: JsonObject = {}, params: JsonObject = {}): Promise<JsonObject> {
-    const transport = await MachineTransport.connect(
-      this.websocketURL('/machines'),
-      this.websocketHeaders(),
-    );
-    try {
-      return (await transport.send('machine.run', {
-        body: {
-          ...body,
-          command: params,
-        },
-        timeout: 30_000,
-      }) as JsonObject) ?? {};
-    } finally {
-      await transport.close();
-    }
-  }
 }
 
 export class LogsResource extends ResourceBase {
@@ -515,6 +475,12 @@ export class NetworksResource extends ResourceBase {
 
   retrieve(id: string): Promise<JsonObject> {
     return this.get(`/networks/${encodeURIComponent(id)}`);
+  }
+}
+
+export class ResourcesResource extends ResourceBase {
+  list(params: ListParams = {}): Promise<ListPage<JsonObject>> {
+    return this.listResource('/resources', { page: 1, pageSize: 10, ...params });
   }
 }
 

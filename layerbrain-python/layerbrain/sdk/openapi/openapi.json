@@ -2292,15 +2292,6 @@
             "bearerAuth": []
           }
         ]
-      },
-      "x-layerbrain-websocket": {
-        "operationId": "machines_socket_websocket",
-        "summary": "Websocket operation",
-        "tags": [
-          "Machines"
-        ],
-        "parameters": [],
-        "security": []
       }
     },
     "/v1/machines/{id}": {
