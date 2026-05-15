@@ -80,7 +80,8 @@ try {
     ram: 1,
     disk: 10,
     region: 'na-us-ca-sfo',
-    ttl_minutes: 30,
+    timeout: 30,
+    ports: [80, 443],
   });
 } catch (error) {
   if (error instanceof AuthenticationError) {
