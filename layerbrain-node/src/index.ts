@@ -1,5 +1,6 @@
 export { Layerbrain as default, Layerbrain, type ClientOptions } from './client.js';
 export { ListPage, type ListPageOptions } from './core/pagination.js';
+export { MachineConnection, type MachineCommandOptions, type MachineCommandResult } from './machines/connection.js';
 export {
   APIError,
   AuthenticationError,

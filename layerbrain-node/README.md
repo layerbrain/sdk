@@ -57,11 +57,8 @@ const client = new Layerbrain({
 });
 const conn = await client.machines.connect('mch_abc123');
 
-const result = await conn.shell.execute('ls -la ~/brain');
+const result = await conn.exec('ls -la ~/brain');
 console.log(result.stdout);
-
-const files = await conn.filesystem.list('~/brain');
-console.log(files);
 
 await conn.close();
 ```

@@ -1706,24 +1706,32 @@
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
                     },
-                    "ssh_host": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "ssh_port": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 65535
-                    },
-                    "ssh_uri": {
-                      "type": "string",
+                    "ssh": {
+                      "type": "object",
                       "nullable": true,
-                      "example": "root@mch-abc.layerbrain.cloud"
-                    },
-                    "ssh_key": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "Private SSH key returned only when explicitly revealed."
+                      "description": "SSH connection details for real network SSH. Prefer the CLI's `machines exec` or `machines shell` commands for fast command execution.",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "port": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "uri": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "root@mch-abc.layerbrain.cloud"
+                        },
+                        "key": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Private SSH key returned only when explicitly revealed."
+                        }
+                      },
+                      "additionalProperties": false
                     },
                     "networks": {
                       "type": "array",
@@ -2116,24 +2124,32 @@
                             "nullable": true,
                             "description": "The public IPv6 address for direct network access."
                           },
-                          "ssh_host": {
-                            "type": "string",
-                            "nullable": true
-                          },
-                          "ssh_port": {
-                            "type": "integer",
-                            "minimum": 1,
-                            "maximum": 65535
-                          },
-                          "ssh_uri": {
-                            "type": "string",
+                          "ssh": {
+                            "type": "object",
                             "nullable": true,
-                            "example": "root@mch-abc.layerbrain.cloud"
-                          },
-                          "ssh_key": {
-                            "type": "string",
-                            "nullable": true,
-                            "description": "Private SSH key returned only when explicitly revealed."
+                            "description": "SSH connection details for real network SSH. Prefer the CLI's `machines exec` or `machines shell` commands for fast command execution.",
+                            "properties": {
+                              "host": {
+                                "type": "string",
+                                "nullable": true
+                              },
+                              "port": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 65535
+                              },
+                              "uri": {
+                                "type": "string",
+                                "nullable": true,
+                                "example": "root@mch-abc.layerbrain.cloud"
+                              },
+                              "key": {
+                                "type": "string",
+                                "nullable": true,
+                                "description": "Private SSH key returned only when explicitly revealed."
+                              }
+                            },
+                            "additionalProperties": false
                           },
                           "networks": {
                             "type": "array",
@@ -2447,24 +2463,32 @@
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
                     },
-                    "ssh_host": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "ssh_port": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 65535
-                    },
-                    "ssh_uri": {
-                      "type": "string",
+                    "ssh": {
+                      "type": "object",
                       "nullable": true,
-                      "example": "root@mch-abc.layerbrain.cloud"
-                    },
-                    "ssh_key": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "Private SSH key returned only when explicitly revealed."
+                      "description": "SSH connection details for real network SSH. Prefer the CLI's `machines exec` or `machines shell` commands for fast command execution.",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "port": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "uri": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "root@mch-abc.layerbrain.cloud"
+                        },
+                        "key": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Private SSH key returned only when explicitly revealed."
+                        }
+                      },
+                      "additionalProperties": false
                     },
                     "networks": {
                       "type": "array",
@@ -2737,24 +2761,32 @@
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
                     },
-                    "ssh_host": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "ssh_port": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 65535
-                    },
-                    "ssh_uri": {
-                      "type": "string",
+                    "ssh": {
+                      "type": "object",
                       "nullable": true,
-                      "example": "root@mch-abc.layerbrain.cloud"
-                    },
-                    "ssh_key": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "Private SSH key returned only when explicitly revealed."
+                      "description": "SSH connection details for real network SSH. Prefer the CLI's `machines exec` or `machines shell` commands for fast command execution.",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "port": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "uri": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "root@mch-abc.layerbrain.cloud"
+                        },
+                        "key": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Private SSH key returned only when explicitly revealed."
+                        }
+                      },
+                      "additionalProperties": false
                     },
                     "networks": {
                       "type": "array",
@@ -2877,11 +2909,60 @@
       },
       "x-layerbrain-websocket": {
         "operationId": "machines_connect_websocket",
-        "summary": "Websocket operation",
+        "summary": "Open a machine WebSocket session",
+        "description": "Open a WebSocket RPC session for a machine. Use `machine.command` for fast one-shot command execution and `session.info` to inspect session readiness. Clients that can set WebSocket upgrade headers should send `Authorization: Bearer <token>` in the upgrade request. Browser clients that cannot set upgrade headers must send the same Authorization header in the first JSON message's `body.headers` object; tokens in query strings are not supported.",
         "tags": [
           "Machines"
         ],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Machine ID."
+          }
+        ],
+        "messages": {
+          "requests": {
+            "session.connect": {
+              "description": "First message for browser clients that cannot set upgrade Authorization headers.",
+              "example": {
+                "id": "auth_1",
+                "method": "session.connect",
+                "body": {
+                  "headers": {
+                    "Authorization": "Bearer <token>"
+                  }
+                }
+              }
+            },
+            "session.info": {
+              "description": "Return machine session readiness.",
+              "example": {
+                "id": "info_1",
+                "method": "session.info",
+                "body": {}
+              }
+            },
+            "machine.command": {
+              "description": "Run a command inside the machine through the fast session plane.",
+              "example": {
+                "id": "cmd_1",
+                "method": "machine.command",
+                "body": {
+                  "command": "pwd",
+                  "timeout": 30
+                }
+              }
+            }
+          },
+          "response": {
+            "description": "Responses use `{ id, data }` or `{ id, error: { type, message } }`."
+          }
+        },
         "security": []
       }
     },
@@ -3038,24 +3119,32 @@
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
                     },
-                    "ssh_host": {
-                      "type": "string",
-                      "nullable": true
-                    },
-                    "ssh_port": {
-                      "type": "integer",
-                      "minimum": 1,
-                      "maximum": 65535
-                    },
-                    "ssh_uri": {
-                      "type": "string",
+                    "ssh": {
+                      "type": "object",
                       "nullable": true,
-                      "example": "root@mch-abc.layerbrain.cloud"
-                    },
-                    "ssh_key": {
-                      "type": "string",
-                      "nullable": true,
-                      "description": "Private SSH key returned only when explicitly revealed."
+                      "description": "SSH connection details for real network SSH. Prefer the CLI's `machines exec` or `machines shell` commands for fast command execution.",
+                      "properties": {
+                        "host": {
+                          "type": "string",
+                          "nullable": true
+                        },
+                        "port": {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 65535
+                        },
+                        "uri": {
+                          "type": "string",
+                          "nullable": true,
+                          "example": "root@mch-abc.layerbrain.cloud"
+                        },
+                        "key": {
+                          "type": "string",
+                          "nullable": true,
+                          "description": "Private SSH key returned only when explicitly revealed."
+                        }
+                      },
+                      "additionalProperties": false
                     },
                     "networks": {
                       "type": "array",

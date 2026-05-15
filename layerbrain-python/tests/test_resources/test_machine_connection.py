@@ -137,8 +137,8 @@ class TestMachineShell(unittest.IsolatedAsyncioTestCase):
         # Verify the sent message
         sent = json.loads(ws.sent[0])
         self.assertEqual(sent["method"], "shell.execute")
-        self.assertEqual(sent["params"]["command"], "ls")
-        self.assertEqual(sent["params"]["timeout"], 30)
+        self.assertEqual(sent["body"]["command"], "ls")
+        self.assertEqual(sent["body"]["timeout"], 30)
 
         listener.cancel()
         try:
@@ -161,7 +161,7 @@ class TestMachineShell(unittest.IsolatedAsyncioTestCase):
 
         await shell.execute("pwd", cwd="/root/brain")
         sent = json.loads(ws.sent[0])
-        self.assertEqual(sent["params"]["cwd"], "/root/brain")
+        self.assertEqual(sent["body"]["cwd"], "/root/brain")
 
         listener.cancel()
         try:
@@ -200,7 +200,7 @@ class TestMachineFilesystem(unittest.IsolatedAsyncioTestCase):
 
         sent = json.loads(ws.sent[0])
         self.assertEqual(sent["method"], "inodes.list")
-        self.assertEqual(sent["params"]["path"], "~")
+        self.assertEqual(sent["body"]["path"], "~")
 
         listener.cancel()
         try:
@@ -240,7 +240,7 @@ class TestMachineFilesystem(unittest.IsolatedAsyncioTestCase):
 
         sent = json.loads(ws.sent[0])
         self.assertEqual(sent["method"], "inodes.put")
-        self.assertEqual(sent["params"]["data"], "hello world")
+        self.assertEqual(sent["body"]["data"], "hello world")
 
         listener.cancel()
         try:
@@ -295,8 +295,8 @@ class TestMachineFilesystem(unittest.IsolatedAsyncioTestCase):
 
         sent = json.loads(ws.sent[0])
         self.assertEqual(sent["method"], "inodes.move")
-        self.assertEqual(sent["params"]["from"], "/root/a.txt")
-        self.assertEqual(sent["params"]["to"], "/root/b.txt")
+        self.assertEqual(sent["body"]["from"], "/root/a.txt")
+        self.assertEqual(sent["body"]["to"], "/root/b.txt")
 
         listener.cancel()
         try:

@@ -1,7 +1,7 @@
 """WebSocket transport for live machine sessions.
 
 Implements the JSON-RPC style protocol used by /v1/machines/{id}:
-- Request: {id, method, params}
+- Request: {id, method, body}
 - Response: {id, data} or {id, error: {type, message}}
 - Events: {event, data}
 """
@@ -22,7 +22,7 @@ class WebSocketTransport:
         self._pending: Dict[str, asyncio.Future] = {}
         self._event_handlers: Dict[str, Callable] = {}
 
-    async def send(self, method: str, params: Dict[str, Any], timeout: float = 30.0) -> Any:
+    async def send(self, method: str, body: Dict[str, Any], timeout: float = 30.0) -> Any:
         """Send a request and wait for the response."""
         request_id = str(uuid.uuid4())
         future: asyncio.Future = asyncio.get_event_loop().create_future()
@@ -31,7 +31,7 @@ class WebSocketTransport:
         await self._ws.send(json.dumps({
             "id": request_id,
             "method": method,
-            "params": params,
+            "body": body,
         }))
 
         try:
@@ -39,11 +39,11 @@ class WebSocketTransport:
         finally:
             self._pending.pop(request_id, None)
 
-    async def emit(self, method: str, params: Dict[str, Any]) -> None:
+    async def emit(self, method: str, body: Dict[str, Any]) -> None:
         """Fire-and-forget message (no response expected)."""
         await self._ws.send(json.dumps({
             "method": method,
-            "params": params,
+            "body": body,
         }))
 
     def _handle_message(self, raw: str) -> None:

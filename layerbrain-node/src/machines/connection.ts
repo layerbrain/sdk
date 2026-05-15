@@ -1,112 +1,35 @@
 import { MachineTransport } from './transport.js';
 
-export interface ShellExecuteOptions {
+export interface MachineCommandOptions {
   cwd?: string;
+  environment?: Record<string, string>;
   timeout?: number;
 }
 
-export interface MachineRunOptions {
-  cwd?: string;
-  timeout?: number;
-}
-
-export class MachineShell {
-  constructor(private readonly transport: MachineTransport) {}
-
-  async execute(command: string, options: ShellExecuteOptions = {}): Promise<Record<string, unknown>> {
-    const timeout = options.timeout ?? 30;
-    const params: Record<string, unknown> = {
-      command,
-      timeout,
-    };
-
-    if (options.cwd) {
-      params.cwd = options.cwd;
-    }
-
-    const result = await this.transport.send('shell.execute', {
-      params,
-      timeout: timeout * 1000 + 5000,
-    });
-    return (result as Record<string, unknown>) ?? {};
-  }
-}
-
-export class MachineFilesystem {
-  constructor(private readonly transport: MachineTransport) {}
-
-  async list(path = '~', showAll = false): Promise<Record<string, unknown>[]> {
-    const result = (await this.transport.send('inodes.list', {
-      params: { path, all: showAll },
-    })) as Record<string, unknown>;
-    return (Array.isArray(result.data) ? result.data : []) as Record<string, unknown>[];
-  }
-
-  async stat(path: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.stat', { params: { path } })) as Record<string, unknown>) ?? {};
-  }
-
-  async read(path: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.get', { params: { path } })) as Record<string, unknown>) ?? {};
-  }
-
-  async write(path: string, data: string, encoding = 'utf-8'): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.put', {
-      params: { path, data, encoding },
-    })) as Record<string, unknown>) ?? {};
-  }
-
-  async mkdir(path: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.mkdir', { params: { path } })) as Record<string, unknown>) ?? {};
-  }
-
-  async delete(path: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.delete', { params: { path } })) as Record<string, unknown>) ?? {};
-  }
-
-  async move(from: string, to: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.move', { params: { from, to } })) as Record<string, unknown>) ?? {};
-  }
-
-  async copy(from: string, to: string): Promise<Record<string, unknown>> {
-    return ((await this.transport.send('inodes.copy', { params: { from, to } })) as Record<string, unknown>) ?? {};
-  }
-
-  async search(pattern: string, path = '~/brain', limit = 50): Promise<Record<string, unknown>[]> {
-    const result = (await this.transport.send('inodes.search', {
-      params: { pattern, path, limit },
-    })) as Record<string, unknown>;
-
-    return (Array.isArray(result.data) ? result.data : []) as Record<string, unknown>[];
-  }
-
-  async recents(path = '~/brain', limit = 20, days = 7): Promise<Record<string, unknown>[]> {
-    const result = (await this.transport.send('inodes.recents', {
-      params: { path, limit, days },
-    })) as Record<string, unknown>;
-
-    return (Array.isArray(result.data) ? result.data : []) as Record<string, unknown>[];
-  }
+export interface MachineCommandResult extends Record<string, unknown> {
+  object?: 'machine.command_result';
+  exit_code?: number;
+  stdout?: string;
+  stderr?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export class MachineConnection {
-  readonly shell: MachineShell;
-  readonly filesystem: MachineFilesystem;
-
-  constructor(readonly id: string, private readonly transport: MachineTransport) {
-    this.shell = new MachineShell(transport);
-    this.filesystem = new MachineFilesystem(transport);
-  }
+  constructor(readonly id: string, private readonly transport: MachineTransport) {}
 
   on(event: string, handler: (data: unknown) => void): () => void {
     return this.transport.on(event, handler);
   }
 
-  emit(method: string, params: Record<string, unknown>): Promise<void> {
-    return this.transport.emit(method, params);
+  emit(method: string, body: Record<string, unknown>): Promise<void> {
+    return this.transport.emit(method, body);
   }
 
-  async run(command: string, options: MachineRunOptions = {}): Promise<Record<string, unknown>> {
+  async info(): Promise<Record<string, unknown>> {
+    return ((await this.transport.send('session.info')) as Record<string, unknown>) ?? {};
+  }
+
+  async exec(command: string | string[], options: MachineCommandOptions = {}): Promise<MachineCommandResult> {
     const timeout = options.timeout ?? 30;
     const body: Record<string, unknown> = {
       command,
@@ -115,11 +38,15 @@ export class MachineConnection {
     if (options.cwd) {
       body.cwd = options.cwd;
     }
-    const result = await this.transport.send('machine.run', {
+    if (options.environment) {
+      body.environment = options.environment;
+    }
+
+    const result = await this.transport.send('machine.command', {
       body,
       timeout: timeout * 1000 + 5000,
     });
-    return (result as Record<string, unknown>) ?? {};
+    return (result as MachineCommandResult) ?? {};
   }
 
   async close(): Promise<void> {

@@ -1,6 +1,6 @@
 {
   "name": "layerbrain",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The official TypeScript and JavaScript library for the Layerbrain API",
   "type": "module",
   "sideEffects": false,
