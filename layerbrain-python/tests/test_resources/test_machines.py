@@ -44,7 +44,7 @@ class TestMachines(unittest.IsolatedAsyncioTestCase):
             name="test-machine",
             cpu=2,
             ram=4,
-            disk_gb=20,
+            disk=20,
             ttl_minutes=60,
         )
         self.assertIsInstance(machine, Machine)
@@ -56,7 +56,7 @@ class TestMachines(unittest.IsolatedAsyncioTestCase):
                 "name": "test-machine",
                 "cpu": 2,
                 "ram": 4,
-                "disk_gb": 20,
+                "disk": 20,
                 "ttl_minutes": 60,
             },
         )

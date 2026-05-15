@@ -1595,25 +1595,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "additionalProperties": true,
-                      "properties": {
-                        "public_ipv6": {
-                          "type": "string",
-                          "format": "ipv6",
-                          "nullable": true,
-                          "description": "The public IPv6 address assigned to the sandbox."
-                        },
-                        "private_ipv4": {
-                          "type": "string",
-                          "format": "ipv4",
-                          "nullable": true,
-                          "description": "The private IPv4 address inside the host network."
-                        },
-                        "ssh_public_key": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
+                      "description": "Non-sensitive machine metadata for machine types that expose provider details. Sandbox network and routing fields are returned as first-class fields instead.",
+                      "additionalProperties": true
                     },
                     "secret": {
                       "nullable": true,
@@ -1696,15 +1679,23 @@
                       "nullable": true,
                       "description": "Disk in GB."
                     },
-                    "hostname": {
-                      "type": "string",
-                      "nullable": true
-                    },
                     "public_address": {
                       "type": "string",
                       "format": "ipv6",
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
+                    },
+                    "public_ipv6": {
+                      "type": "string",
+                      "format": "ipv6",
+                      "nullable": true,
+                      "description": "The public IPv6 address assigned to the sandbox."
+                    },
+                    "private_ipv4": {
+                      "type": "string",
+                      "format": "ipv4",
+                      "nullable": true,
+                      "description": "The private IPv4 address inside the host network."
                     },
                     "ssh": {
                       "type": "object",
@@ -1723,12 +1714,12 @@
                         "uri": {
                           "type": "string",
                           "nullable": true,
-                          "example": "root@mch-abc.layerbrain.cloud"
+                          "example": "root@2a03:b0c0:1:e0::1234"
                         },
-                        "key": {
+                        "public_key": {
                           "type": "string",
                           "nullable": true,
-                          "description": "Private SSH key returned only when explicitly revealed."
+                          "description": "Public SSH key installed on the machine. The private key is returned only in secret.value when a create or explicit reveal response includes it."
                         }
                       },
                       "additionalProperties": false
@@ -2013,25 +2004,8 @@
                           },
                           "data": {
                             "type": "object",
-                            "additionalProperties": true,
-                            "properties": {
-                              "public_ipv6": {
-                                "type": "string",
-                                "format": "ipv6",
-                                "nullable": true,
-                                "description": "The public IPv6 address assigned to the sandbox."
-                              },
-                              "private_ipv4": {
-                                "type": "string",
-                                "format": "ipv4",
-                                "nullable": true,
-                                "description": "The private IPv4 address inside the host network."
-                              },
-                              "ssh_public_key": {
-                                "type": "string",
-                                "nullable": true
-                              }
-                            }
+                            "description": "Non-sensitive machine metadata for machine types that expose provider details. Sandbox network and routing fields are returned as first-class fields instead.",
+                            "additionalProperties": true
                           },
                           "secret": {
                             "nullable": true,
@@ -2114,15 +2088,23 @@
                             "nullable": true,
                             "description": "Disk in GB."
                           },
-                          "hostname": {
-                            "type": "string",
-                            "nullable": true
-                          },
                           "public_address": {
                             "type": "string",
                             "format": "ipv6",
                             "nullable": true,
                             "description": "The public IPv6 address for direct network access."
+                          },
+                          "public_ipv6": {
+                            "type": "string",
+                            "format": "ipv6",
+                            "nullable": true,
+                            "description": "The public IPv6 address assigned to the sandbox."
+                          },
+                          "private_ipv4": {
+                            "type": "string",
+                            "format": "ipv4",
+                            "nullable": true,
+                            "description": "The private IPv4 address inside the host network."
                           },
                           "ssh": {
                             "type": "object",
@@ -2141,12 +2123,12 @@
                               "uri": {
                                 "type": "string",
                                 "nullable": true,
-                                "example": "root@mch-abc.layerbrain.cloud"
+                                "example": "root@2a03:b0c0:1:e0::1234"
                               },
-                              "key": {
+                              "public_key": {
                                 "type": "string",
                                 "nullable": true,
-                                "description": "Private SSH key returned only when explicitly revealed."
+                                "description": "Public SSH key installed on the machine. The private key is returned only in secret.value when a create or explicit reveal response includes it."
                               }
                             },
                             "additionalProperties": false
@@ -2352,25 +2334,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "additionalProperties": true,
-                      "properties": {
-                        "public_ipv6": {
-                          "type": "string",
-                          "format": "ipv6",
-                          "nullable": true,
-                          "description": "The public IPv6 address assigned to the sandbox."
-                        },
-                        "private_ipv4": {
-                          "type": "string",
-                          "format": "ipv4",
-                          "nullable": true,
-                          "description": "The private IPv4 address inside the host network."
-                        },
-                        "ssh_public_key": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
+                      "description": "Non-sensitive machine metadata for machine types that expose provider details. Sandbox network and routing fields are returned as first-class fields instead.",
+                      "additionalProperties": true
                     },
                     "secret": {
                       "nullable": true,
@@ -2453,15 +2418,23 @@
                       "nullable": true,
                       "description": "Disk in GB."
                     },
-                    "hostname": {
-                      "type": "string",
-                      "nullable": true
-                    },
                     "public_address": {
                       "type": "string",
                       "format": "ipv6",
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
+                    },
+                    "public_ipv6": {
+                      "type": "string",
+                      "format": "ipv6",
+                      "nullable": true,
+                      "description": "The public IPv6 address assigned to the sandbox."
+                    },
+                    "private_ipv4": {
+                      "type": "string",
+                      "format": "ipv4",
+                      "nullable": true,
+                      "description": "The private IPv4 address inside the host network."
                     },
                     "ssh": {
                       "type": "object",
@@ -2480,12 +2453,12 @@
                         "uri": {
                           "type": "string",
                           "nullable": true,
-                          "example": "root@mch-abc.layerbrain.cloud"
+                          "example": "root@2a03:b0c0:1:e0::1234"
                         },
-                        "key": {
+                        "public_key": {
                           "type": "string",
                           "nullable": true,
-                          "description": "Private SSH key returned only when explicitly revealed."
+                          "description": "Public SSH key installed on the machine. The private key is returned only in secret.value when a create or explicit reveal response includes it."
                         }
                       },
                       "additionalProperties": false
@@ -2650,25 +2623,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "additionalProperties": true,
-                      "properties": {
-                        "public_ipv6": {
-                          "type": "string",
-                          "format": "ipv6",
-                          "nullable": true,
-                          "description": "The public IPv6 address assigned to the sandbox."
-                        },
-                        "private_ipv4": {
-                          "type": "string",
-                          "format": "ipv4",
-                          "nullable": true,
-                          "description": "The private IPv4 address inside the host network."
-                        },
-                        "ssh_public_key": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
+                      "description": "Non-sensitive machine metadata for machine types that expose provider details. Sandbox network and routing fields are returned as first-class fields instead.",
+                      "additionalProperties": true
                     },
                     "secret": {
                       "nullable": true,
@@ -2751,15 +2707,23 @@
                       "nullable": true,
                       "description": "Disk in GB."
                     },
-                    "hostname": {
-                      "type": "string",
-                      "nullable": true
-                    },
                     "public_address": {
                       "type": "string",
                       "format": "ipv6",
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
+                    },
+                    "public_ipv6": {
+                      "type": "string",
+                      "format": "ipv6",
+                      "nullable": true,
+                      "description": "The public IPv6 address assigned to the sandbox."
+                    },
+                    "private_ipv4": {
+                      "type": "string",
+                      "format": "ipv4",
+                      "nullable": true,
+                      "description": "The private IPv4 address inside the host network."
                     },
                     "ssh": {
                       "type": "object",
@@ -2778,12 +2742,12 @@
                         "uri": {
                           "type": "string",
                           "nullable": true,
-                          "example": "root@mch-abc.layerbrain.cloud"
+                          "example": "root@2a03:b0c0:1:e0::1234"
                         },
-                        "key": {
+                        "public_key": {
                           "type": "string",
                           "nullable": true,
-                          "description": "Private SSH key returned only when explicitly revealed."
+                          "description": "Public SSH key installed on the machine. The private key is returned only in secret.value when a create or explicit reveal response includes it."
                         }
                       },
                       "additionalProperties": false
@@ -3008,25 +2972,8 @@
                     },
                     "data": {
                       "type": "object",
-                      "additionalProperties": true,
-                      "properties": {
-                        "public_ipv6": {
-                          "type": "string",
-                          "format": "ipv6",
-                          "nullable": true,
-                          "description": "The public IPv6 address assigned to the sandbox."
-                        },
-                        "private_ipv4": {
-                          "type": "string",
-                          "format": "ipv4",
-                          "nullable": true,
-                          "description": "The private IPv4 address inside the host network."
-                        },
-                        "ssh_public_key": {
-                          "type": "string",
-                          "nullable": true
-                        }
-                      }
+                      "description": "Non-sensitive machine metadata for machine types that expose provider details. Sandbox network and routing fields are returned as first-class fields instead.",
+                      "additionalProperties": true
                     },
                     "secret": {
                       "nullable": true,
@@ -3109,15 +3056,23 @@
                       "nullable": true,
                       "description": "Disk in GB."
                     },
-                    "hostname": {
-                      "type": "string",
-                      "nullable": true
-                    },
                     "public_address": {
                       "type": "string",
                       "format": "ipv6",
                       "nullable": true,
                       "description": "The public IPv6 address for direct network access."
+                    },
+                    "public_ipv6": {
+                      "type": "string",
+                      "format": "ipv6",
+                      "nullable": true,
+                      "description": "The public IPv6 address assigned to the sandbox."
+                    },
+                    "private_ipv4": {
+                      "type": "string",
+                      "format": "ipv4",
+                      "nullable": true,
+                      "description": "The private IPv4 address inside the host network."
                     },
                     "ssh": {
                       "type": "object",
@@ -3136,12 +3091,12 @@
                         "uri": {
                           "type": "string",
                           "nullable": true,
-                          "example": "root@mch-abc.layerbrain.cloud"
+                          "example": "root@2a03:b0c0:1:e0::1234"
                         },
-                        "key": {
+                        "public_key": {
                           "type": "string",
                           "nullable": true,
-                          "description": "Private SSH key returned only when explicitly revealed."
+                          "description": "Public SSH key installed on the machine. The private key is returned only in secret.value when a create or explicit reveal response includes it."
                         }
                       },
                       "additionalProperties": false

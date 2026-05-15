@@ -61,6 +61,7 @@ class Machine(BaseModel):
     organization: str | None = None
     environment: str | None = None
     state: str | None = None
+    region: str | None = None
     zone: str | None = None
     type: str | None = None
     cwd: str | None = None
@@ -68,8 +69,18 @@ class Machine(BaseModel):
     ipv4: str | None = None
     ipv6: str | None = None
     key: str | None = None
+    cpu: int | None = None
+    ram: int | None = None
+    disk: int | None = None
     vcpu: int | None = None
     ram_gb: int | None = None
+    public_address: str | None = None
+    public_ipv6: str | None = None
+    private_ipv4: str | None = None
+    ssh: dict[str, Any] | None = None
+    secret: str | dict[str, Any] | None = None
+    networks: list[Any] | None = None
+    gpu: dict[str, Any] | None = None
     ssh_secret_id: str | None = None
     created: str | None = None
     modified: str | None = None

@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.0.3 - 2026-05-15
+
+- Align machine create examples with the public `disk` field.
+- Refresh machine payload metadata from the public OpenAPI contract.
+
 ## 0.0.2 - 2026-05-15
 
 - Send WebSocket request payloads in `body` for machine session commands.

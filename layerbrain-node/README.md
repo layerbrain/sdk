@@ -78,7 +78,7 @@ try {
   await client.machines.create({
     cpu: 1,
     ram: 1,
-    disk_gb: 10,
+    disk: 10,
     region: 'na-us-ca-sfo',
     ttl_minutes: 30,
   });

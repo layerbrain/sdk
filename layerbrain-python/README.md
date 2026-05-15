@@ -52,7 +52,7 @@ for chunk in stream:
 machine = client.machines.create(
     cpu=2,
     ram=4,
-    disk_gb=40,
+    disk=40,
     region="na-us-ca-sfo",
     ttl_minutes=60,
 )
