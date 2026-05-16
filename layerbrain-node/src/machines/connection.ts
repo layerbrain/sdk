@@ -32,11 +32,12 @@ export class MachineConnection {
   }
 
   async exec(command: string | string[], options: MachineCommandOptions = {}): Promise<MachineCommandResult> {
-    const timeout = options.timeout ?? 30;
     const body: Record<string, unknown> = {
       command,
-      timeout,
     };
+    if (options.timeout !== undefined) {
+      body.timeout = options.timeout;
+    }
     if (options.cwd) {
       body.cwd = options.cwd;
     }
@@ -48,7 +49,7 @@ export class MachineConnection {
     try {
       result = await this.transport.send('machine.command', {
         body,
-        timeout: timeout * 1000 + 5000,
+        timeout: options.timeout === undefined ? null : options.timeout * 1000 + 5000,
         signal: options.signal,
       });
     } catch (error) {

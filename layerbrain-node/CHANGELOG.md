@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.0.7 - 2026-05-17
+
+- Let machine command requests wait until completion unless callers provide an explicit timeout.
+
 ## 0.0.6 - 2026-05-17
 
 - Terminate machine WebSocket transports immediately when command requests abort or time out.

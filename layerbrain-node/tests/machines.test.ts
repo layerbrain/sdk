@@ -86,7 +86,7 @@ describe('machine command mapping', () => {
 
     const connection = new MachineConnection('mch_test', transport);
 
-    const execResult = await connection.exec('ls', { cwd: '/root/brain', timeout: 30, signal: controller.signal });
+    const execResult = await connection.exec('ls', { cwd: '/root/brain', signal: controller.signal });
     const info = await connection.info();
 
     expect(execResult.stdout).toBe('ok\n');
@@ -97,13 +97,40 @@ describe('machine command mapping', () => {
       1,
       'machine.command',
       {
-        body: { command: 'ls', timeout: 30, cwd: '/root/brain' },
-        timeout: 35000,
+        body: { command: 'ls', cwd: '/root/brain' },
+        timeout: null,
         signal: controller.signal,
       },
     );
 
     expect(send).toHaveBeenNthCalledWith(2, 'session.info');
+  });
+
+  it('maps explicit exec timeouts to the WebSocket command and request deadline', async () => {
+    const send = vi.fn().mockResolvedValue({
+      object: 'machine.command_result',
+      stdout: 'ok\n',
+      stderr: '',
+      exit_code: 0,
+    });
+    const transport = {
+      send,
+      emit: vi.fn(),
+      on: vi.fn(),
+      close: vi.fn(),
+    } as unknown as MachineTransport;
+
+    const connection = new MachineConnection('mch_test', transport);
+    await connection.exec('sleep 1', { timeout: 30 });
+
+    expect(send).toHaveBeenCalledWith(
+      'machine.command',
+      {
+        body: { command: 'sleep 1', timeout: 30 },
+        timeout: 35000,
+        signal: undefined,
+      },
+    );
   });
 });
 

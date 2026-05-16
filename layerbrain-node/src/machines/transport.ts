@@ -13,14 +13,14 @@ export interface TransportMessage {
 
 export interface SendOptions {
   body?: Record<string, unknown>;
-  timeout?: number;
+  timeout?: number | null;
   signal?: AbortSignal;
 }
 
 type PendingRequest = {
   resolve: (value: unknown) => void;
   reject: (error: Error) => void;
-  timeout: NodeJS.Timeout;
+  timeout?: NodeJS.Timeout;
   cleanup: () => void;
 };
 
@@ -95,17 +95,21 @@ export class MachineTransport {
     const id = randomUUID();
 
     const responsePromise = new Promise<unknown>((resolve, reject) => {
-      const timeoutHandle = setTimeout(() => {
-        const request = this.pending.get(id);
-        this.pending.delete(id);
-        request?.cleanup();
-        this.socket.terminate();
-        reject(new TimeoutError(`Request timed out: ${method}`));
-      }, timeout);
-      timeoutHandle.unref?.();
+      const timeoutHandle = timeout === null
+        ? undefined
+        : setTimeout(() => {
+            const request = this.pending.get(id);
+            this.pending.delete(id);
+            request?.cleanup();
+            this.socket.terminate();
+            reject(new TimeoutError(`Request timed out: ${method}`));
+          }, timeout);
+      timeoutHandle?.unref?.();
       const abort = () => {
         this.pending.delete(id);
-        clearTimeout(timeoutHandle);
+        if (timeoutHandle) {
+          clearTimeout(timeoutHandle);
+        }
         signal?.removeEventListener('abort', abort);
         this.socket.terminate();
         reject(new ConnectionError(`Request aborted: ${method}`));
@@ -194,7 +198,9 @@ export class MachineTransport {
       }
 
       this.pending.delete(message.id);
-      clearTimeout(request.timeout);
+      if (request.timeout) {
+        clearTimeout(request.timeout);
+      }
       request.cleanup();
 
       if (message.error) {
