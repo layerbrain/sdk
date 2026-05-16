@@ -42,13 +42,13 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/layerbrain/layerbrain.git",
+    "url": "git+https://github.com/layerbrain/sdk.git",
     "directory": "layerbrain-node"
   },
   "bugs": {
-    "url": "https://github.com/layerbrain/layerbrain/issues"
+    "url": "https://github.com/layerbrain/sdk/issues"
   },
-  "homepage": "https://github.com/layerbrain/layerbrain/tree/main/layerbrain-node#readme",
+  "homepage": "https://github.com/layerbrain/sdk/tree/main/layerbrain-node#readme",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "ws": "^8.18.0"
