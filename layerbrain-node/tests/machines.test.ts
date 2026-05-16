@@ -65,6 +65,7 @@ describe('machines connect', () => {
 
 describe('machine command mapping', () => {
   it('maps exec and session info to the WebSocket protocol', async () => {
+    const controller = new AbortController();
     const send = vi
       .fn()
       .mockResolvedValueOnce({
@@ -85,7 +86,7 @@ describe('machine command mapping', () => {
 
     const connection = new MachineConnection('mch_test', transport);
 
-    const execResult = await connection.exec('ls', { cwd: '/root/brain', timeout: 30 });
+    const execResult = await connection.exec('ls', { cwd: '/root/brain', timeout: 30, signal: controller.signal });
     const info = await connection.info();
 
     expect(execResult.stdout).toBe('ok\n');
@@ -98,6 +99,7 @@ describe('machine command mapping', () => {
       {
         body: { command: 'ls', timeout: 30, cwd: '/root/brain' },
         timeout: 35000,
+        signal: controller.signal,
       },
     );
 
@@ -129,5 +131,25 @@ describe('machine transport close', () => {
     expect(socket.close).toHaveBeenCalledOnce();
     expect(socket.terminate).toHaveBeenCalledOnce();
     vi.useRealTimers();
+  });
+
+  it('rejects pending sends when the abort signal fires', async () => {
+    const socket = new EventEmitter() as EventEmitter & {
+      readyState: number;
+      close: ReturnType<typeof vi.fn>;
+      terminate: ReturnType<typeof vi.fn>;
+      send: ReturnType<typeof vi.fn>;
+    };
+    socket.readyState = WebSocket.OPEN;
+    socket.close = vi.fn();
+    socket.terminate = vi.fn();
+    socket.send = vi.fn((_payload: string, callback: (error?: Error) => void) => callback());
+    const transport = new MachineTransport(socket as unknown as WebSocket);
+    const controller = new AbortController();
+
+    const response = transport.send('machine.command', { signal: controller.signal });
+    controller.abort();
+
+    await expect(response).rejects.toThrow('Request aborted: machine.command');
   });
 });

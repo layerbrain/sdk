@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.0.5 - 2026-05-17
+
+- Terminate machine WebSocket transports immediately when command requests abort or time out.
+
 ## 0.0.4 - 2026-05-16
 
 - Ensure machine WebSocket sessions terminate when the close handshake stalls.

@@ -14,12 +14,14 @@ export interface TransportMessage {
 export interface SendOptions {
   body?: Record<string, unknown>;
   timeout?: number;
+  signal?: AbortSignal;
 }
 
 type PendingRequest = {
   resolve: (value: unknown) => void;
   reject: (error: Error) => void;
   timeout: NodeJS.Timeout;
+  cleanup: () => void;
 };
 
 export class MachineTransport {
@@ -85,20 +87,36 @@ export class MachineTransport {
   }
 
   async send(method: string, options: SendOptions = {}): Promise<unknown> {
-    const { body = {}, timeout = 30_000 } = options;
+    const { body = {}, timeout = 30_000, signal } = options;
+    if (signal?.aborted) {
+      throw new ConnectionError(`Request aborted: ${method}`);
+    }
 
     const id = randomUUID();
 
     const responsePromise = new Promise<unknown>((resolve, reject) => {
       const timeoutHandle = setTimeout(() => {
+        const request = this.pending.get(id);
         this.pending.delete(id);
+        request?.cleanup();
+        this.socket.terminate();
         reject(new TimeoutError(`Request timed out: ${method}`));
       }, timeout);
+      timeoutHandle.unref?.();
+      const abort = () => {
+        this.pending.delete(id);
+        clearTimeout(timeoutHandle);
+        signal?.removeEventListener('abort', abort);
+        this.socket.terminate();
+        reject(new ConnectionError(`Request aborted: ${method}`));
+      };
+      signal?.addEventListener('abort', abort, { once: true });
 
       this.pending.set(id, {
         resolve,
         reject,
         timeout: timeoutHandle,
+        cleanup: () => signal?.removeEventListener('abort', abort),
       });
     });
 
@@ -177,6 +195,7 @@ export class MachineTransport {
 
       this.pending.delete(message.id);
       clearTimeout(request.timeout);
+      request.cleanup();
 
       if (message.error) {
         request.reject(
@@ -208,6 +227,7 @@ export class MachineTransport {
     for (const [id, request] of this.pending) {
       this.pending.delete(id);
       clearTimeout(request.timeout);
+      request.cleanup();
       request.reject(error);
     }
   }

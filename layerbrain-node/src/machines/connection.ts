@@ -1,8 +1,10 @@
 import { MachineTransport } from './transport.js';
+import { TimeoutError } from '../core/errors.js';
 
 export interface MachineCommandOptions {
   cwd?: string;
   environment?: Record<string, string>;
+  signal?: AbortSignal;
   timeout?: number;
 }
 
@@ -42,10 +44,19 @@ export class MachineConnection {
       body.environment = options.environment;
     }
 
-    const result = await this.transport.send('machine.command', {
-      body,
-      timeout: timeout * 1000 + 5000,
-    });
+    let result: unknown;
+    try {
+      result = await this.transport.send('machine.command', {
+        body,
+        timeout: timeout * 1000 + 5000,
+        signal: options.signal,
+      });
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        await this.close().catch(() => {});
+      }
+      throw error;
+    }
     return (result as MachineCommandResult) ?? {};
   }
 
