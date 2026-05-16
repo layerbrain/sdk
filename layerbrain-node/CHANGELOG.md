@@ -2,9 +2,13 @@
 
 All notable changes to this project are documented in this file.
 
-## 0.0.5 - 2026-05-17
+## 0.0.6 - 2026-05-17
 
 - Terminate machine WebSocket transports immediately when command requests abort or time out.
+
+## 0.0.5 - 2026-05-17
+
+- Skipped because the release tag was cut before runtime metadata was updated.
 
 ## 0.0.4 - 2026-05-16
 
