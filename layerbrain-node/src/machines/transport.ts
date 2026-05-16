@@ -110,7 +110,7 @@ export class MachineTransport {
     await this.sendRaw({ method, body });
   }
 
-  async close(): Promise<void> {
+  async close(timeout = 1_000): Promise<void> {
     this.closing = true;
     this.rejectAll(new ConnectionError('WebSocket transport closed'));
 
@@ -119,8 +119,28 @@ export class MachineTransport {
     }
 
     await new Promise<void>((resolve) => {
-      this.socket.once('close', () => resolve());
-      this.socket.close();
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        this.socket.off('close', finish);
+        resolve();
+      };
+      const timer = setTimeout(() => {
+        if (this.socket.readyState !== WebSocket.CLOSED) {
+          this.socket.terminate();
+        }
+        finish();
+      }, timeout);
+      timer.unref?.();
+
+      this.socket.once('close', finish);
+      if (this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close();
+      } else {
+        this.socket.terminate();
+      }
     });
   }
 

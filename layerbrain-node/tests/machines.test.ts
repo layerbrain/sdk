@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
+import { EventEmitter } from 'node:events';
+import WebSocket from 'ws';
 import { HTTPClient } from '../src/core/http.js';
 import { MachineConnection } from '../src/machines/connection.js';
 import { MachineTransport } from '../src/machines/transport.js';
@@ -100,5 +102,32 @@ describe('machine command mapping', () => {
     );
 
     expect(send).toHaveBeenNthCalledWith(2, 'session.info');
+  });
+});
+
+describe('machine transport close', () => {
+  it('terminates the socket when the close handshake does not finish', async () => {
+    vi.useFakeTimers();
+    const socket = new EventEmitter() as EventEmitter & {
+      readyState: number;
+      close: ReturnType<typeof vi.fn>;
+      terminate: ReturnType<typeof vi.fn>;
+      send: ReturnType<typeof vi.fn>;
+    };
+    socket.readyState = WebSocket.OPEN;
+    socket.close = vi.fn();
+    socket.terminate = vi.fn(() => {
+      socket.readyState = WebSocket.CLOSED;
+    });
+    socket.send = vi.fn();
+    const transport = new MachineTransport(socket as unknown as WebSocket);
+
+    const close = transport.close(25);
+    await vi.advanceTimersByTimeAsync(25);
+    await close;
+
+    expect(socket.close).toHaveBeenCalledOnce();
+    expect(socket.terminate).toHaveBeenCalledOnce();
+    vi.useRealTimers();
   });
 });

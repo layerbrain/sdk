@@ -49,7 +49,7 @@ export class MachineConnection {
     return (result as MachineCommandResult) ?? {};
   }
 
-  async close(): Promise<void> {
-    await this.transport.close();
+  async close(timeout?: number): Promise<void> {
+    await this.transport.close(timeout);
   }
 }

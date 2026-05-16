@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented in this file.
 
+## 0.0.4 - 2026-05-16
+
+- Ensure machine WebSocket sessions terminate when the close handshake stalls.
+
 ## 0.0.3 - 2026-05-15
 
 - Align machine create examples with the public `disk` field.
